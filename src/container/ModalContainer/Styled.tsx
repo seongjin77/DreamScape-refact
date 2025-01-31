@@ -6,7 +6,7 @@ export const ModalContainerStyle = styled.div<{ deviceType: string }>`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.851);
   z-index: 9999;
   overflow: hidden;
   display: flex;

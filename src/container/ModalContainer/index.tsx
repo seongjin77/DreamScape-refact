@@ -22,6 +22,7 @@ const ModalContainer = () => {
 
   useEffect(() => {
     if (modalRef.current && modalList.length > 0 && !modalRef.current.classList.contains('open')) {
+      modalRef.current.classList.add('close');
       setTimeout(() => {
         modalRef.current?.classList.add('open');
       }, 10);
@@ -38,7 +39,11 @@ const ModalContainer = () => {
   return createPortal(
     <ModalContainerStyle ref={modalRef} onClick={closeModalList} deviceType={deviceType}>
       {modalList.map((modal) => (
-        <div className={modal?.isClosing ? 'closeIndividualModal' : ''} key={modal.id}>
+        <div
+          className={modal?.isClosing ? 'closeIndividualModal' : ''}
+          key={modal.id}
+          onClick={closeModalList}
+        >
           {modal.component}
         </div>
       ))}
