@@ -6,6 +6,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import useModal from '../../../hooks/useModal';
+import useToast from '../../../hooks/useToast';
 
 const PasswordCheck = ({
   password,
@@ -21,6 +22,7 @@ const PasswordCheck = ({
   const [passwordValue, setPasswordValue] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { closeModal } = useModal();
+  const { errorToast } = useToast();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -29,8 +31,7 @@ const PasswordCheck = ({
       setIsPass(true);
       closeModal('PasswordCheckModal');
     } else {
-      setIsPass(false);
-      flag.current = '';
+      errorToast('비밀번호가 일치하지 않습니다.');
     }
   };
 

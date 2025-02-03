@@ -17,6 +17,8 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { PasswordCheckModal } from '../';
+import { toast } from 'react-toastify';
+import useToast from '../../../hooks/useToast';
 
 interface DetailImageProps {
   id: string;
@@ -109,6 +111,7 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
 
   const [isPass, setIsPass] = useState(false);
   const { openModal } = useModal();
+  const { successToast } = useToast();
 
   const checkPassword = (password: string, userId: string, flagCheck: string) => {
     if (flag.current === '') {
@@ -149,9 +152,11 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
 
       // 문서 업데이트
       await updateDoc(commentRef, { commentValue: editValue });
-
+      successToast('수정 완료');
       setEditMode(null);
       setEditValue('');
+      flag.current = '';
+      setIsPass(false);
     } catch (error) {
       console.error('Error updating document: ', error);
     }
@@ -168,13 +173,14 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
   const deleteComment = async (commentUserId: string) => {
     const commentRef = doc(db, `images/${id}/comments`, commentUserId);
     await deleteDoc(commentRef);
+    flag.current = '';
+    setIsPass(false);
   };
 
   useEffect(() => {
     // 비밀번호 확인 통과 후 수정모드 변경
     if (isPass && tempUserInfo.current && flag.current === 'edit') {
       changeEditMode(tempUserInfo.current.id, tempUserInfo.current.currentValue);
-      flag.current = '';
     }
 
     // 비밀번호 확인 통과 후 삭제
@@ -182,7 +188,7 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
       deleteComment(tempDeleteInfo.current.id).catch((error) => {
         console.error('Error deleting: ', error);
       });
-      flag.current = '';
+      successToast('삭제 완료');
     }
   }, [isPass]);
 
