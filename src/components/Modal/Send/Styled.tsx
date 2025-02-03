@@ -17,8 +17,18 @@ export const ModalContent = styled.div<{
   border-radius: 20px;
   padding: 40px 30px;
   height: ${(props) => (props.deviceType === 'mobile' ? '100vh' : 'calc(100vh - 50px)')};
-  max-width: ${(props) => (props.deviceType === 'mobile' ? 'initial' : '640px')};
-  width: ${(props) => (props.deviceType === 'mobile' ? '100%' : '40vw')};
+  max-width: ${(props) => (props.deviceType === 'mobile' ? 'initial' : '650px')};
+  width: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '100vw';
+      case 'tablet':
+        return '100vw';
+      case 'desktop':
+      default:
+        return '40vw';
+    }
+  }};
   box-shadow: ${({ openSideModal }) => (openSideModal ? '0' : '0 4px 10px rgba(0, 0, 0, 0.3)')};
   border-radius: ${({ openSideModal }) => (openSideModal ? '20px 0 0 20px' : '20px')};
   display: flex;
@@ -26,9 +36,17 @@ export const ModalContent = styled.div<{
   align-items: center;
   transition: 0.3s ease-in;
   z-index: 2;
-  transform: ${({ openSideModal }) =>
-    openSideModal ? 'translate(-50%, 0%);' : 'translate(0%, 0%);'};
-
+  transform: ${({ openSideModal, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+      case 'tablet':
+        return 'translate(0%, 0%)';
+      case 'desktop':
+        return openSideModal ? 'translate(-50%, 0%)' : 'translate(0%, 0%)';
+      default:
+        return 'translate(0%, 0%)';
+    }
+  }};
   &.mobile-modal {
     border-radius: initial;
     transform: translate(0%, 0%);
@@ -95,22 +113,76 @@ export const CommentModalStyle = styled.div<{
   deviceType: string;
 }>`
   flex-shrink: 0;
-  height: ${(props) => (props.deviceType === 'mobile' ? '70vh' : 'calc(100vh - 50px)')};
-  max-width: ${(props) => (props.deviceType === 'mobile' ? 'initial' : '640px')};
-  width: ${(props) => (props.deviceType === 'mobile' ? '100vw' : '40vw')};
+  height: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '70vh';
+      case 'tablet':
+        return '70vh';
+      case 'desktop':
+      default:
+        return 'calc(100vh - 50px)';
+    }
+  }};
+  max-width: ${(props) => (props.deviceType === 'mobile' ? 'initial' : '650px')};
+  width: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '100vw';
+      case 'tablet':
+        return '100vw';
+      case 'desktop':
+      default:
+        return '40vw';
+    }
+  }};
   background-color: rgb(39, 39, 42);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  border-radius: ${({ openSideModal }) => (openSideModal ? '0 20px 20px 0' : '20px')};
+  justify-content: center;
+  border-radius: ${({ openSideModal, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+        return '0';
+      case 'tablet':
+        return '20px';
+      case 'desktop':
+        return openSideModal ? '0 20px 20px 0' : '20px';
+      default:
+        return '20px';
+    }
+  }};
   align-items: center;
   padding: 40px 30px;
   box-shadow: ${({ openSideModal }) => (openSideModal ? '0' : '0 4px 10px rgba(0, 0, 0, 0.3)')};
   transition: 0.3s ease-in;
   position: absolute;
-  transform: ${({ openSideModal }) =>
-    openSideModal ? 'translate(50%, 0%);' : 'translate(0%, 0%);'};
+  transform: ${({ openSideModal, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+      case 'tablet':
+        return 'translate(0%, 0%)';
+      case 'desktop':
+        return openSideModal ? 'translate(50%, 0%)' : 'translate(0%, 0%)';
+      default:
+        return 'translate(0%, 0%)';
+    }
+  }};
+  z-index: ${({ deviceType, openSideModal }) => {
+    if (deviceType === 'tablet' && openSideModal) {
+      return '3';
+    }
+    return '1';
+  }};
+  opacity: ${({ deviceType, openSideModal }) => {
+    switch (deviceType) {
+      case 'tablet':
+        return openSideModal ? '1' : '0';
+      default:
+        return '1';
+    }
+  }};
   &.mobile-modal {
     border-radius: 15px 15px 0 0;
     transform: ${({ openSideModal }) =>
@@ -142,11 +214,16 @@ export const CommentModalStyle = styled.div<{
     align-items: center;
     justify-content: center;
     gap: 20px;
+    height: 100%;
     .form {
       display: flex;
       flex-direction: column;
       gap: 10px;
       width: 100%;
+      height: auto;
+      &.large-form {
+        height: 100%;
+      }
       label {
         font-size: 14px;
         color: var(--white-color);
@@ -176,7 +253,7 @@ export const CommentModalStyle = styled.div<{
         box-sizing: border-box;
         position: relative;
         width: 100%;
-        height: ${(props) => (props.deviceType === 'mobile' ? '15vh' : '50vh')};
+        height: 100%;
         padding: 14px 18px;
         background: var(--white-color);
         border: 2px solid var(--skyblue-color);
@@ -198,7 +275,8 @@ export const CommentModalStyle = styled.div<{
     width: 100%;
     display: flex;
     align-items: center;
-    flex-direction: ${(props) => (props.deviceType === 'mobile' ? 'row' : 'column')};
+    padding-top: 20px;
+    flex-direction: ${(props) => (props.deviceType === 'mobile' || 'tablet' ? 'row' : 'column')};
     gap: 20px;
     .back-btn {
       position: relative;

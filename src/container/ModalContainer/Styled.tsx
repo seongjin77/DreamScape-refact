@@ -29,7 +29,7 @@ export const ModalContainerStyle = styled.div<{ deviceType: string }>`
     transition: opacity 0.3s ease-in-out;
   }
   > div {
-    position: relative;
+    position: ${(props) => (props.deviceType === 'mobile' ? 'absolute' : 'relative')};
     width: ${(props) => (props.deviceType === 'mobile' ? '100%' : '')};
     height: ${(props) => (props.deviceType === 'mobile' ? '100%' : '')};
   }

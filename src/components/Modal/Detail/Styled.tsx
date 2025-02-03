@@ -10,15 +10,15 @@ const FadeIn = keyframes`
   }
 `;
 export const ModalContainerStyle = styled.div`
-  /* width: 100%;
-  height: 100%; */
+  width: 100%;
+  height: 100%;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-export const ModalStyle = styled.div<{ $openComment: boolean; deviceType: string }>`
+export const ModalStyle = styled.div<{ openComment: boolean; deviceType: string }>`
   /* width: 45vw;
   height: calc(100vh - 50px);
   background-color: rgb(39, 39, 42);
@@ -27,23 +27,42 @@ export const ModalStyle = styled.div<{ $openComment: boolean; deviceType: string
   justify-content: space-between;
   align-items: center; */
 
-  width: ${(props) => (props.deviceType === 'mobile' ? '100vw' : '40vw')};
+  width: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '100vw';
+      case 'tablet':
+        return '100vw';
+      case 'desktop':
+      default:
+        return '40vw';
+    }
+  }};
   max-width: 650px;
   flex-shrink: 0;
   height: ${(props) => (props.deviceType === 'mobile' ? '100vh' : 'calc(100vh - 50px)')};
   background-color: rgb(39, 39, 42);
-  border-radius: ${({ $openComment, deviceType }) =>
-    deviceType === 'mobile' ? '0' : $openComment ? '20px 0 0 20px' : '20px'};
+  border-radius: ${({ openComment, deviceType }) =>
+    deviceType === 'mobile' ? '0' : openComment ? '20px 0 0 20px' : '20px'};
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
-  padding: 40px 30px;
-  box-shadow: ${({ $openComment, deviceType }) =>
-    deviceType === 'mobile' ? 'none' : $openComment ? '0' : '0 4px 10px rgba(0, 0, 0, 0.3)'};
+  padding: 50px 40px;
+  box-shadow: ${({ openComment, deviceType }) =>
+    deviceType === 'mobile' ? 'none' : openComment ? '0' : '0 4px 10px rgba(0, 0, 0, 0.3)'};
   transition: 0.3s ease-in;
-  transform: ${({ $openComment }) =>
-    $openComment ? 'translate(-50%, 0%);' : 'translate(0%, 0%);'};
+  transform: ${({ openComment, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+      case 'tablet':
+        return 'translate(0%, 0%)';
+      case 'desktop':
+        return openComment ? 'translate(-50%, 0%)' : 'translate(0%, 0%)';
+      default:
+        return 'translate(0%, 0%)';
+    }
+  }};
   z-index: 2;
   &.mobile-modal {
     border-radius: initial;
@@ -99,7 +118,7 @@ export const ImageWrapper = styled.div`
 
   img {
     max-width: 100%;
-    height: auto;
+    height: 40vh;
     max-height: 100%;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -183,13 +202,43 @@ export const ImageWrapper = styled.div`
 `;
 
 export const CommentModalStyle = styled.div<{ openComment: boolean; deviceType: string }>`
-  width: ${(props) => (props.deviceType === 'mobile' ? '100vw' : '40vw')};
+  width: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '100vw';
+      case 'tablet':
+        return '70vw';
+      case 'desktop':
+      default:
+        return '40vw';
+    }
+  }};
   max-width: 650px;
   flex-shrink: 0;
-  height: ${(props) => (props.deviceType === 'mobile' ? '70vh' : 'calc(100vh - 50px)')};
+  height: ${(props) => {
+    switch (props.deviceType) {
+      case 'mobile':
+        return '70vh';
+      case 'tablet':
+        return '70vh';
+      case 'desktop':
+      default:
+        return 'calc(100vh - 50px)';
+    }
+  }};
   background-color: rgb(39, 39, 42);
-  border-radius: ${({ openComment, deviceType }) =>
-    deviceType === 'mobile' ? '0' : openComment ? '0 20px 20px 0' : '20px'};
+  border-radius: ${({ openComment, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+        return '0';
+      case 'tablet':
+        return '20px';
+      case 'desktop':
+        return openComment ? '0 20px 20px 0' : '20px';
+      default:
+        return '20px'; // 기본값
+    }
+  }};
   display: flex;
   flex-direction: column;
   //justify-content: center;
@@ -197,13 +246,37 @@ export const CommentModalStyle = styled.div<{ openComment: boolean; deviceType: 
   justify-content: flex-start;
   gap: 20px;
   position: absolute;
-  padding: 40px 30px;
+  padding: 50px 40px;
   box-shadow: ${({ deviceType }) =>
     deviceType === 'mobile' ? 'none' : '0 4px 10px rgba(0, 0, 0, 0.3)'};
   transition: 0.3s ease-in;
   animation: ${FadeIn} 0.3s;
-  transform: ${({ openComment }) => (openComment ? 'translate(50%, 0%);' : 'translate(0%, 0%);')};
+  transform: ${({ openComment, deviceType }) => {
+    switch (deviceType) {
+      case 'mobile':
+      case 'tablet':
+        return 'translate(0%, 0%)';
+      case 'desktop':
+        return openComment ? 'translate(50%, 0%)' : 'translate(0%, 0%)';
+      default:
+        return 'translate(0%, 0%)';
+    }
+  }};
   overflow: hidden;
+  z-index: ${({ deviceType, openComment }) => {
+    if (deviceType === 'tablet' && openComment) {
+      return '3';
+    }
+    return '1';
+  }};
+  opacity: ${({ deviceType, openComment }) => {
+    switch (deviceType) {
+      case 'tablet':
+        return openComment ? '1' : '0';
+      default:
+        return '1';
+    }
+  }};
 
   &.mobile-modal {
     border-radius: 15px 15px 0 0;

@@ -7,10 +7,15 @@ export const ModalContainerStyle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  left: 50%;
+  top: 50%;
 `;
 
 export const ModalContentStyle = styled.div`
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -20,6 +25,18 @@ export const ModalContentStyle = styled.div`
   background-color: var(--white-color);
   padding: 20px;
   border-radius: 10px;
-  width: 30vw;
-  height: 30vh;
+  width: 280px;
+  height: 250px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+  .MuiInputBase-root {
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    height: 36.5px;
+    background: var(--white-color);
+    border-radius: 5px;
+    resize: none;
+    outline: none;
+    transition: border 1s ease;
+  }
 `;

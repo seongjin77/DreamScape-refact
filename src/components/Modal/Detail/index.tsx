@@ -269,7 +269,7 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
     <ModalContainerStyle>
       <ModalStyle
         className={`${deviceType === 'mobile' ? 'mobile-modal' : ''}`}
-        $openComment={openComment}
+        openComment={openComment}
         deviceType={deviceType}
       >
         <div className="modal-body">
@@ -314,7 +314,7 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
         openComment={openComment}
         deviceType={deviceType}
       >
-        {deviceType === 'mobile' ? (
+        {deviceType === 'mobile' || 'tablet' ? (
           <button className="modal-close" onClick={() => setOpenComment(false)}>
             x
           </button>

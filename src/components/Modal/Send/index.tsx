@@ -42,6 +42,7 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
 
     try {
       await uploadImageFromUrl(imageUrl, description, title, prompt);
+      console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
       console.log('Send 컴포넌트 데이터 업로드 성공:', { title, description });
       closeModal('SendImageModal');
     } catch (error) {
@@ -134,10 +135,8 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
       >
         <div className="info-area">
           <div className="introduce">
-            <p>제목과 정보를 입력해주세요</p>
-            <p className="small">
-              제목과 정보를 입력 후 업로드 될시 해당 정보는 서버에 올라갑니다.
-            </p>
+            <p>제목과 내용을 입력해주세요</p>
+            <p className="small">제목과 내용이 업로드 될 시 해당 정보는 서버에 올라갑니다.</p>
           </div>
           <div className="form">
             <label>제목</label>
@@ -149,7 +148,7 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div className="form">
+          <div className="form large-form">
             <label>내용</label>
             <textarea
               className="description-area"
@@ -160,7 +159,7 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
           </div>
         </div>
         <div className="btn-area">
-          {deviceType === 'mobile' ? (
+          {deviceType === 'mobile' || 'tablet' ? (
             <button className="back-btn" onClick={() => setOpenSideModal(false)}>
               뒤로가기
             </button>
