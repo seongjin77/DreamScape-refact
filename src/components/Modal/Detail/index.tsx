@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import AspectRatioSelector from '../../AspectRatioSelector';
 import { useDeviceType } from '../../../hooks/useDeviceType';
@@ -275,6 +276,21 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
     return () => unsubscribe();
   }, []);
 
+  const handleDeletePost = async () => {
+    const confirmDelete = window.confirm('이 게시물을 삭제하시겠습니까?');
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, 'images', id));
+      console.log('게시물이 삭제되었습니다.');
+
+      closeModal('detailModal');
+    } catch (error) {
+      console.error('게시물 삭제 실패:', error);
+    }
+  };
+
   const handleImgDownload = async () => {
     if (!imageUrl) return;
 
@@ -315,6 +331,7 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
       console.error('이미지 다운로드 오류:', error);
     }
   };
+
   return (
     <ModalContainerStyle>
       <ModalStyle
@@ -329,6 +346,12 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
               <img src={imageUrl} alt={description} style={{ aspectRatio }} />
               <div className="article-wrapper">
                 <AspectRatioSelector setAspectRatio={setAspectRatio} aspectRatio={aspectRatio} />
+                <button
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onClick={handleDeletePost}
+                >
+                  <DeleteIcon sx={{ color: 'white' }} />
+                </button>
                 <button
                   onClick={handleImgDownload}
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
@@ -380,7 +403,7 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
               position: 'absolute',
               top: '10px',
               right: '10px',
-              color: 'white', // 🔹 아이콘 색상을 흰색으로 변경
+              color: 'white',
               minWidth: 'auto',
               padding: '5px',
             }}
