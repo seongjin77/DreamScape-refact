@@ -82,6 +82,9 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
 
           &:hover {
             transform: scale(1.05);
+            span {
+              opacity: 1;
+            }
           }
           &::before {
             content: '';
@@ -100,7 +103,32 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
           &:hover::before {
             transform: translateY(0);
           }
+          span {
+            width: fit-content;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 1;
+          }
+          .comment-count {
+            top: 10px;
+            right: 10px;
+            bottom: inherit;
+          }
+          .file-size {
+            bottom: 10px;
+            left: 10px;
+          }
         }
+
         .item1 {
           grid-area: item1;
           height: 100%;
