@@ -48,11 +48,7 @@ const Main: React.FC = () => {
           </div>
           <Option onPromptGenerated={handlePromptGenerated} />
           <PromptInput generatedPrompt={prompt} />
-          <ImageView
-            deviceType={deviceType}
-            prompt={prompt || 'default prompt'}
-            generatedPrompt={prompt}
-          />
+          <ImageView deviceType={deviceType} />
         </section>
       </main>
       <MobilePromptInput />

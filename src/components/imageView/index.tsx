@@ -21,9 +21,7 @@ interface ImageData {
 
 const ImageView: React.FC<{
   deviceType: string;
-  prompt: string;
-  generatedPrompt?: string | undefined;
-}> = ({ deviceType, prompt, generatedPrompt }) => {
+}> = ({ deviceType }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [latestImages, setLatestImages] = useState<ImageData[]>([]);
   const [oldestImages, setOldestImages] = useState<ImageData[]>([]);
@@ -76,7 +74,11 @@ const ImageView: React.FC<{
   ) => {
     setLoading(true);
     const imageCollection = collection(db, 'images');
-    const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(10));
+
+    const q = isSortingByComments
+      ? query(imageCollection, orderBy('createdAt', 'desc'), limit(10))
+      : query(imageCollection, orderBy(orderField, orderDirection), limit(10));
+
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const imageData = await Promise.all(
         snapshot.docs.map(async (doc) => {
@@ -111,7 +113,7 @@ const ImageView: React.FC<{
     const fetchData = async () => {
       const unsubscribeLatest = await fetchImages('createdAt', 'desc', setLatestImages);
       const unsubscribeOldest = await fetchImages('createdAt', 'asc', setOldestImages);
-      const unsubscribePopular = await fetchImages('createdAt', 'desc', setPopularImages, true);
+      const unsubscribePopular = await fetchImages('createdAt', 'desc', setPopularImages, true); // 🔹 댓글 많은 순 추가
 
       return () => {
         unsubscribeLatest();
@@ -134,27 +136,52 @@ const ImageView: React.FC<{
   }, []);
 
   const renderImages = (images: ImageData[]) => {
-    return images.length > 0 ? (
-      images.map((image, index) => (
-        <div
-          className={`grid-item item${index + 1}`}
-          onClick={() =>
-            openDetailModal(image.id, image.url, image.description, image.title, image.prompt)
-          }
-          key={image.id}
-        >
-          <img
-            src={image.url}
-            alt={image.description}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-          <span className="comment-count">{image.commentCount} Comments</span>
-          <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
+    if (deviceType === 'mobile') {
+      return images.length > 0 ? (
+        <Slider {...settings}>
+          {images.map((image, index) => (
+            <div
+              key={image.id}
+              onClick={() =>
+                openDetailModal(image.id, image.url, image.description, image.title, image.prompt)
+              }
+            >
+              <img
+                src={image.url}
+                alt={image.description}
+                style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+              />
+            </div>
+          ))}
+        </Slider>
+      ) : (
+        <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
+      );
+    } else {
+      return images.length > 0 ? (
+        <div className="grid-container">
+          {images.map((image, index) => (
+            <div
+              className={`grid-item item${index + 1}`}
+              onClick={() =>
+                openDetailModal(image.id, image.url, image.description, image.title, image.prompt)
+              }
+              key={image.id}
+            >
+              <img
+                src={image.url}
+                alt={image.description}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <span className="comment-count">{image.commentCount} Comments</span>
+              <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
+            </div>
+          ))}
         </div>
-      ))
-    ) : (
-      <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
-    );
+      ) : (
+        <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
+      );
+    }
   };
 
   return (

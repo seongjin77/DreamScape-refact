@@ -12,17 +12,17 @@ const fadeIn = keyframes`
 export const ImageViewStyle = styled.div<{ deviceType: string }>`
   width: 100%;
   .grid-section {
-    padding-top: ${(props) => (props.deviceType === 'mobile' ? '10px' : '50px')};
+    padding-top: ${(props) => (props.deviceType === 'mobile' ? '10px' : '20px')};
     .tab-menu {
       width: 100%;
       max-width: 1200px;
 
       .tabs {
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         border-bottom: 2px solid var(--gray-color);
         margin-bottom: 20px;
-        gap: ${(props) => (props.deviceType === 'mobile' ? '40px' : '100px')};
+        gap: ${(props) => (props.deviceType === 'mobile' ? '20px' : '100px')};
 
         .tab-link {
           padding: 10px 20px;
@@ -30,7 +30,7 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
           background: none;
           color: rgba(0, 0, 0, 0.4);
           cursor: pointer;
-          font-size: 16px;
+          font-size: 14px;
           transition: color 0.7s ease;
 
           &.active {
