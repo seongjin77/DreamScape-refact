@@ -48,7 +48,7 @@ export const ModalStyle = styled.div<{ openComment: boolean; deviceType: string 
   flex-direction: column;
   align-items: center;
   position: absolute;
-  padding: 50px 40px;
+  padding: ${({ deviceType }) => (deviceType === 'mobile' ? '20px' : '50px 40px')};
   box-shadow: ${({ openComment, deviceType }) =>
     deviceType === 'mobile' ? 'none' : openComment ? '0' : '0 4px 10px rgba(0, 0, 0, 0.3)'};
   transition: 0.3s ease-in;
@@ -74,6 +74,17 @@ export const ModalStyle = styled.div<{ openComment: boolean; deviceType: string 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    .image-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .article-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+    }
     .button-box {
       display: flex;
       align-items: center;
@@ -130,7 +141,7 @@ export const ImageWrapper = styled.div`
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 20px;
+    gap: 10px;
     .prompt-area {
       width: 100%;
       display: flex;
@@ -156,6 +167,7 @@ export const ImageWrapper = styled.div`
       }
     }
     .title-area {
+      width: 100%;
       padding-top: 15px;
       display: flex;
       flex-direction: column;
@@ -171,6 +183,16 @@ export const ImageWrapper = styled.div`
         color: var(--white-color);
         font-size: 16px;
         font-weight: 500;
+        word-break: break-word;
+        min-height: 5vh;
+        max-height: 10vh;
+        background-color: color(srgb 0.61 0.6 0.6 / 0.19);
+        border-radius: 10px;
+        width: 100%;
+        overflow-y: auto;
+        padding: 15px 20px;
+        color: #ffffff;
+        font-size: 14px;
         word-break: break-word;
       }
     }

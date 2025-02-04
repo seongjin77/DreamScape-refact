@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ModalContainerStyle, ImageWrapper, ModalStyle, CommentModalStyle } from './Styled';
 import useModal from '../../../hooks/useModal';
 import { Button } from '@mui/material';
+
+import DownloadIcon from '@mui/icons-material/Download';
+import CloseIcon from '@mui/icons-material/Close';
+
+import AspectRatioSelector from '../../AspectRatioSelector';
 import { useDeviceType } from '../../../hooks/useDeviceType';
 import {
   addDoc,
@@ -17,9 +22,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { PasswordCheckModal } from '../';
-import { toast } from 'react-toastify';
 import useToast from '../../../hooks/useToast';
-
 interface DetailImageProps {
   id: string;
   imageUrl: string;
@@ -252,6 +255,7 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const { deviceType } = useDeviceType();
+  const [aspectRatio, setAspectRatio] = useState<string>('1/1');
 
   const [commentList, setCommentList] = useState<any[]>([]);
 
@@ -271,6 +275,46 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
     return () => unsubscribe();
   }, []);
 
+  const handleImgDownload = async () => {
+    if (!imageUrl) return;
+
+    try {
+      const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error('이미지 요청 실패');
+
+      const blob = await response.blob();
+      const img = new Image();
+      img.src = URL.createObjectURL(blob);
+
+      img.onload = () => {
+        const [widthRatio, heightRatio] = aspectRatio.split('/').map(Number);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const newWidth = img.naturalWidth;
+        const newHeight = (newWidth * heightRatio) / widthRatio;
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `${title || 'downloaded-image'}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }, 'image/png');
+      };
+    } catch (error) {
+      console.error('이미지 다운로드 오류:', error);
+    }
+  };
   return (
     <ModalContainerStyle>
       <ModalStyle
@@ -281,7 +325,18 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
         <div className="modal-body">
           {/* 이미지와 설명 */}
           <ImageWrapper>
-            <img src={imageUrl} alt={description} />
+            <div className="image-wrapper">
+              <img src={imageUrl} alt={description} style={{ aspectRatio }} />
+              <div className="article-wrapper">
+                <AspectRatioSelector setAspectRatio={setAspectRatio} aspectRatio={aspectRatio} />
+                <button
+                  onClick={handleImgDownload}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                >
+                  <DownloadIcon sx={{ color: 'white' }} />
+                </button>
+              </div>
+            </div>
             <div className="info-wrpper">
               <div className="title-area">
                 <p className="area-title">타이틀</p>
@@ -298,19 +353,16 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
             </div>
           </ImageWrapper>
           <div className="button-box">
-            {deviceType === 'mobile' ? (
-              <Button
-                className="close-btn"
-                variant="outlined"
-                onClick={() => closeModal('detailModal')}
-              >
-                닫기
-              </Button>
-            ) : (
-              ''
-            )}
+            <Button
+              className="close-btn"
+              variant="outlined"
+              onClick={() => closeModal('detailModal')}
+            >
+              닫기
+            </Button>
+
             <Button variant="contained" onClick={openDescription}>
-              {openComment ? '닫기' : '상세보기'}
+              {openComment ? '접기' : '상세보기'}
             </Button>
           </div>
         </div>
@@ -320,11 +372,22 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
         openComment={openComment}
         deviceType={deviceType}
       >
-        {deviceType === 'mobile' || 'tablet' ? (
-          <button className="modal-close" onClick={() => setOpenComment(false)}>
-            x
-          </button>
-        ) : null}
+        {(deviceType === 'mobile' || deviceType === 'tablet') && (
+          <Button
+            className="modal-close"
+            onClick={() => setOpenComment(false)}
+            sx={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              color: 'white', // 🔹 아이콘 색상을 흰색으로 변경
+              minWidth: 'auto',
+              padding: '5px',
+            }}
+          >
+            <CloseIcon />
+          </Button>
+        )}
         <AddComment
           id={id}
           userId={userId}

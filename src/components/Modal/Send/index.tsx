@@ -44,12 +44,12 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
       await uploadImageFromUrl(imageUrl, description, title, prompt);
       console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
       console.log('Send 컴포넌트 데이터 업로드 성공:', { title, description });
+
       closeModal('SendImageModal');
     } catch (error) {
       console.error('Send 컴포넌트 데이터 업로드 실패:', error);
     }
   };
-
   const handleImgDownload = () => {
     if (!imageUrl) return;
 
@@ -84,6 +84,13 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
 
   const toggleModalSide = () => {
     setOpenSideModal(!openSideModal);
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    if (newTitle.length <= 12) {
+      setTitle(newTitle);
+    }
   };
 
   return (
@@ -143,9 +150,10 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
             <input
               className="title-input"
               type="text"
-              placeholder="제목을 입력해주세요"
-              value={title} // 제목 상태와 연결
-              onChange={(e) => setTitle(e.target.value)}
+              placeholder="제목을 입력해주세요 (최대 12자)"
+              value={title}
+              onChange={handleTitleChange}
+              maxLength={12}
             />
           </div>
           <div className="form large-form">
@@ -153,16 +161,16 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
             <textarea
               className="description-area"
               placeholder="내용을 입력해주세요"
-              value={description} // 내용 상태와 연결
+              value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
         </div>
         <div className="btn-area">
-          {deviceType === 'mobile' || 'tablet' ? (
-            <button className="back-btn" onClick={() => setOpenSideModal(false)}>
+          {deviceType === 'mobile' || deviceType === 'tablet' ? (
+            <Button className="back-btn" onClick={() => setOpenSideModal(false)}>
               뒤로가기
-            </button>
+            </Button>
           ) : null}
           <button className="upload-btn" onClick={handleImgUpload}>
             메인에 업로드
