@@ -400,6 +400,7 @@ export const CommentModalStyle = styled.div<{ openComment: boolean; deviceType: 
         justify-content: flex-start;
         align-items: center;
         .nickname {
+          color: var(--blue-color);
           font-size: 16px;
           font-weight: 700;
         }

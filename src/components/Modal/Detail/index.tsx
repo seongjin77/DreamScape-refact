@@ -197,7 +197,7 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
       {commentList.map((data) => (
         <li className="comment-list" key={data.id}>
           <div className="comment-user-info">
-            <span className="nickname">닉네임 {data.userId}</span>
+            <span className="nickname">{data.userId}</span>
           </div>
           <div className="comment-wrapper">
             {editMode === data.id ? (

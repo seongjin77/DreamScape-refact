@@ -43,7 +43,13 @@ const ImageView: React.FC<{
     setActiveTab(tabId);
   };
 
-  const openDetailModal = (id: string, url: string, description: string, title: string) => {
+  const openDetailModal = (
+    id: string,
+    url: string,
+    description: string,
+    title: string,
+    prompt: string,
+  ) => {
     openModal({
       id: 'detailModal',
       component: (
@@ -65,19 +71,27 @@ const ImageView: React.FC<{
       const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(10));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const imageData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          url: doc.data().url || '',
-          title: doc.data().title,
-          prompt: doc.data().prompt,
-          description: doc.data().description || 'No description',
-        }));
+        console.log(
+          '🔥 Firestore에서 가져온 데이터:',
+          snapshot.docs.map((doc) => doc.data()),
+        );
+
+        const imageData = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            url: data.url || 'null',
+            title: data.title || 'No Title',
+            prompt: data.prompt || '', // prompt 값이 없으면 빈 문자열로 설정
+            description: data.description || 'No description',
+          };
+        });
         setImages(imageData);
       });
 
       return unsubscribe;
     } catch (error) {
-      console.error('Error fetching images:', error);
+      console.error('이미지 불러올 수 없음:', error);
       return () => {};
     }
   };
@@ -123,7 +137,13 @@ const ImageView: React.FC<{
                           <div
                             className={`grid-item item${index + 1}`}
                             onClick={() =>
-                              openDetailModal(image.id, image.url, image.description, image.title)
+                              openDetailModal(
+                                image.id,
+                                image.url,
+                                image.description,
+                                image.title,
+                                image.prompt,
+                              )
                             }
                             key={image.id}
                           >
@@ -155,7 +175,13 @@ const ImageView: React.FC<{
                       <div
                         key={index}
                         onClick={() =>
-                          openDetailModal(image.id, image.url, image.description, image.title)
+                          openDetailModal(
+                            image.id,
+                            image.url,
+                            image.description,
+                            image.title,
+                            image.prompt,
+                          )
                         }
                       >
                         <img
