@@ -35,6 +35,8 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
   };
 
   const handleSubmitButton = (): void => {
+    if (!prompt.trim()) return;
+
     openModal({
       id: 'SendImageModal',
       component: <SendImage fetchImage={fetchImage} deviceType={deviceType} prompt={prompt} />,
@@ -57,7 +59,15 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
           }}
           placeholder="AI가 생성할 내용에 대한 설명을 입력하세요"
         />
-        <button onClick={handleSubmitButton} type="button">
+        <button
+          onClick={handleSubmitButton}
+          type="button"
+          disabled={!prompt.trim()}
+          style={{
+            opacity: !prompt.trim() ? 0.5 : 1,
+            cursor: !prompt.trim() ? 'not-allowed' : 'pointer',
+          }} // 🚀 UI 개선
+        >
           생성하기
         </button>
       </div>
