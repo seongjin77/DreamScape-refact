@@ -18,45 +18,10 @@ export const FooterStyle = styled.div`
       color: var(--white-color);
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
-      .info-area {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        > p {
-          &:not(:last-child)::after {
-            content: '';
-            position: relative;
-            width: 1px;
-            height: 12px;
-            background-color: var(--white-color);
-            margin: 0 10px;
-            display: inline-block;
-            top: 0;
-            left: 0;
-          }
-        }
-      }
-      .link-area {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        > p {
-          &:not(:last-child)::after {
-            content: '';
-            position: relative;
-            width: 1px;
-            height: 12px;
-            background-color: var(--white-color);
-            margin: 0 10px;
-            display: inline-block;
-            top: 0;
-            left: 0;
-          }
-        }
+      justify-content: center;
+      align-items: center;
+      p {
+        text-align: center;
       }
     }
   }
