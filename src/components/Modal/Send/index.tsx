@@ -19,6 +19,7 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [openSideModal, setOpenSideModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
+  const [postpassword, setPostpassword] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const { closeModal } = useModal();
   const { deviceType } = useDeviceType();
@@ -41,7 +42,7 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
     }
 
     try {
-      await uploadImageFromUrl(imageUrl, description, title, prompt);
+      await uploadImageFromUrl(imageUrl, description, title, prompt, postpassword);
       console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
       console.log('Send 컴포넌트 데이터 업로드 성공:', { title, description });
 
@@ -91,6 +92,10 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
     if (newTitle.length <= 12) {
       setTitle(newTitle);
     }
+  };
+
+  const handlePostPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPostpassword(e.target.value);
   };
 
   return (
@@ -154,6 +159,16 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
               value={title}
               onChange={handleTitleChange}
               maxLength={12}
+            />
+          </div>
+          <div className="form">
+            <label>비밀번호</label>
+            <input
+              className="title-input"
+              type="password" // 🔹 비밀번호 가리기 적용
+              placeholder="비밀번호를 입력해주세요"
+              value={postpassword}
+              onChange={handlePostPasswordChange}
             />
           </div>
           <div className="form large-form">

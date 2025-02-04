@@ -17,6 +17,7 @@ interface ImageData {
   prompt: string;
   commentCount: number;
   generatedPrompt?: string;
+  postpassword: string;
 }
 
 const ImageView: React.FC<{
@@ -50,6 +51,7 @@ const ImageView: React.FC<{
     description: string,
     title: string,
     prompt: string,
+    postpassword: string,
   ) => {
     openModal({
       id: 'detailModal',
@@ -61,6 +63,7 @@ const ImageView: React.FC<{
           description={description}
           deviceType={deviceType}
           prompt={prompt}
+          postpassword={postpassword}
         />
       ),
     });
@@ -94,6 +97,7 @@ const ImageView: React.FC<{
             prompt: data.prompt || '',
             description: data.description || 'No description',
             commentCount,
+            postpassword: data.postpassword || '',
           };
         }),
       );
@@ -108,7 +112,6 @@ const ImageView: React.FC<{
 
     return unsubscribe;
   };
-
   useEffect(() => {
     const fetchData = async () => {
       const unsubscribeLatest = await fetchImages('createdAt', 'desc', setLatestImages);
@@ -139,11 +142,18 @@ const ImageView: React.FC<{
     if (deviceType === 'mobile') {
       return images.length > 0 ? (
         <Slider {...settings}>
-          {images.map((image, index) => (
+          {images.map((image) => (
             <div
               key={image.id}
               onClick={() =>
-                openDetailModal(image.id, image.url, image.description, image.title, image.prompt)
+                openDetailModal(
+                  image.id,
+                  image.url,
+                  image.description,
+                  image.title,
+                  image.prompt,
+                  image.postpassword, // ✅ postpassword 전달
+                )
               }
             >
               <img
@@ -160,11 +170,18 @@ const ImageView: React.FC<{
     } else {
       return images.length > 0 ? (
         <div className="grid-container">
-          {images.map((image, index) => (
+          {images.map((image) => (
             <div
-              className={`grid-item item${index + 1}`}
+              className="grid-item"
               onClick={() =>
-                openDetailModal(image.id, image.url, image.description, image.title, image.prompt)
+                openDetailModal(
+                  image.id,
+                  image.url,
+                  image.description,
+                  image.title,
+                  image.prompt,
+                  image.postpassword,
+                )
               }
               key={image.id}
             >
@@ -174,7 +191,6 @@ const ImageView: React.FC<{
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <span className="comment-count">{image.commentCount} Comments</span>
-              <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
             </div>
           ))}
         </div>

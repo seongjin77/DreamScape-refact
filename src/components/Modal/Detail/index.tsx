@@ -23,6 +23,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { PasswordCheckModal } from '../';
+import { PostPasswordCheckModal } from '../';
 import useToast from '../../../hooks/useToast';
 interface DetailImageProps {
   id: string;
@@ -31,6 +32,7 @@ interface DetailImageProps {
   title: string;
   deviceType: string;
   prompt: string;
+  postpassword: string;
 }
 
 interface AddCommentProps {
@@ -247,22 +249,26 @@ const CommentList = ({ commentList, id }: { commentList: any[]; id: string }) =>
   );
 };
 
-const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImageProps) => {
-  // img
-  const { closeModal } = useModal();
+const DetailImage = ({
+  id,
+  imageUrl,
+  description,
+  title,
+  prompt,
+  postpassword,
+}: DetailImageProps) => {
+  const { closeModal, openModal } = useModal();
+  const { successToast } = useToast();
+  const { errorToast } = useToast();
   const [openComment, setOpenComment] = useState<boolean>(false);
-  // comment
   const [commentValue, setCommentValue] = useState('');
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const { deviceType } = useDeviceType();
   const [aspectRatio, setAspectRatio] = useState<string>('1/1');
-
   const [commentList, setCommentList] = useState<any[]>([]);
-
-  const openDescription = () => {
-    setOpenComment(!openComment);
-  };
+  const Postflag = useRef<string>('');
+  const [isPostPass, setIsPostPass] = useState(false);
 
   useEffect(() => {
     const commentsRef = collection(db, `images/${id}/comments`);
@@ -276,19 +282,8 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
     return () => unsubscribe();
   }, []);
 
-  const handleDeletePost = async () => {
-    const confirmDelete = window.confirm('이 게시물을 삭제하시겠습니까?');
-
-    if (!confirmDelete) return;
-
-    try {
-      await deleteDoc(doc(db, 'images', id));
-      console.log('게시물이 삭제되었습니다.');
-
-      closeModal('detailModal');
-    } catch (error) {
-      console.error('게시물 삭제 실패:', error);
-    }
+  const openDescription = () => {
+    setOpenComment(!openComment);
   };
 
   const handleImgDownload = async () => {
@@ -331,6 +326,44 @@ const DetailImage = ({ id, imageUrl, description, title, prompt }: DetailImagePr
       console.error('이미지 다운로드 오류:', error);
     }
   };
+
+  const handleDeletePost = (): void => {
+    if (!postpassword) {
+      errorToast('삭제 비밀번호가 없습니다.');
+      return;
+    }
+
+    if (Postflag.current === '') {
+      Postflag.current = 'delete';
+    }
+
+    openModal({
+      id: 'PostPasswordCheckModal',
+      component: (
+        <PostPasswordCheckModal
+          postpassword={postpassword}
+          setIsPostPass={setIsPostPass}
+          flag={Postflag}
+        />
+      ),
+    });
+  };
+
+  const deletePost = async (): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, 'images', id));
+      successToast('게시물이 삭제되었습니다.');
+      closeModal('detailModal');
+    } catch (error) {
+      console.error('게시물 삭제 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isPostPass && Postflag.current === 'delete') {
+      deletePost().catch((error) => console.error('게시물 삭제 실패:', error));
+    }
+  }, [isPostPass]);
 
   return (
     <ModalContainerStyle>
