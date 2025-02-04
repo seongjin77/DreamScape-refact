@@ -33,9 +33,21 @@ const PostPasswordCheck = ({
     }
   };
 
+  const handleClose = () => {
+    setIsPostPass(false);
+    closeModal('PostPasswordCheckModal');
+    flag.current = '';
+  };
+
   return (
     <ModalContainerStyle>
       <ModalContentStyle>
+        <IconButton
+          onClick={handleClose}
+          style={{ position: 'absolute', top: '10px', right: '10px' }}
+        >
+          <CloseIcon />
+        </IconButton>
         <LockIcon fontSize="large" />
         <p>게시물 비밀번호를 입력해주세요.</p>
         <FormControl variant="outlined">
