@@ -152,7 +152,7 @@ const ImageView: React.FC<{
                   image.description,
                   image.title,
                   image.prompt,
-                  image.postpassword, // ✅ postpassword 전달
+                  image.postpassword,
                 )
               }
             >
@@ -170,9 +170,9 @@ const ImageView: React.FC<{
     } else {
       return images.length > 0 ? (
         <div className="grid-container">
-          {images.map((image) => (
+          {images.map((image, index) => (
             <div
-              className="grid-item"
+              className={`grid-item item${index + 1}`}
               onClick={() =>
                 openDetailModal(
                   image.id,
@@ -190,7 +190,8 @@ const ImageView: React.FC<{
                 alt={image.description}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
-              <span className="comment-count">{image.commentCount} Comments</span>
+              <span className="comment-count">{image.commentCount} Comments</span>.
+              <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
             </div>
           ))}
         </div>

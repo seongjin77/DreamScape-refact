@@ -29,7 +29,6 @@ export const ModalContentStyle = styled.div`
   height: 250px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
   .MuiInputBase-root {
-    margin-top: 15px;
     box-sizing: border-box;
     position: relative;
     width: 100%;
@@ -39,5 +38,8 @@ export const ModalContentStyle = styled.div`
     resize: none;
     outline: none;
     transition: border 1s ease;
+  }
+  .MuiButton-root {
+    margin-top: 15px;
   }
 `;
