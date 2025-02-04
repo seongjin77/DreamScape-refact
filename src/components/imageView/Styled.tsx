@@ -187,7 +187,9 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
     border-radius: 50%;
     &::before {
       color: var(--skyblue-color);
-      font-size: 28px;
+      font-size: 35px;
+      position: relative;
+      left: -3px;
     }
   }
   .slick-next {
@@ -199,7 +201,9 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
     border-radius: 50%;
     &::before {
       color: var(--skyblue-color);
-      font-size: 28px;
+      font-size: 35px;
+      position: relative;
+      left: -3px;
     }
   }
   .slick-list {
