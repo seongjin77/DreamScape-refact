@@ -42,12 +42,15 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
       }
 
       .tab-content {
+        margin: 0 auto;
+        text-align: center;
         .grid-container {
           display: ${(props) => (props.deviceType === 'mobile' ? '' : 'grid')};
           gap: 16px;
           max-width: 100%;
           grid-template-columns: repeat(4, 1fr);
           height: auto;
+          margin: 0 auto;
         }
 
         /* 그리드 아이템 스타일 */

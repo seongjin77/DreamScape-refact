@@ -79,7 +79,6 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
       ),
     });
   };
-
   const fetchImages = async (
     orderField: string,
     orderDirection: 'asc' | 'desc',
@@ -89,9 +88,8 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     setLoading(true);
     const imageCollection = collection(db, 'images');
 
-    const q = isSortingByComments
-      ? query(imageCollection, orderBy('commentCount', 'desc'), limit(36))
-      : query(imageCollection, orderBy(orderField, orderDirection), limit(36));
+    // Firestore 쿼리 (댓글 순 정렬은 나중에 JS에서 정렬)
+    const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(36));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const imageData = await Promise.all(
@@ -99,7 +97,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
           const data = doc.data();
           const commentCollection = collection(db, `images/${doc.id}/comments`);
           const commentSnapshot = await getDocs(commentCollection);
-          const commentCount = commentSnapshot.size;
+          const commentCount = commentSnapshot.size || 0; // ✅ 기본값 0 설정
 
           return {
             id: doc.id,
@@ -107,21 +105,18 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
             title: data.title || 'No Title',
             prompt: data.prompt || '',
             description: data.description || 'No description',
-            commentCount,
+            commentCount, // ✅ 댓글 개수 추가
             postpassword: data.postpassword || '',
           };
         }),
       );
 
-      const filteredData = searchQuery
-        ? imageData.filter(
-            (image) =>
-              image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
-          )
+      // ✅ 댓글 개수 기준으로 정렬 추가
+      const sortedData = isSortingByComments
+        ? imageData.sort((a, b) => b.commentCount - a.commentCount) // JS에서 정렬
         : imageData;
 
-      setState(filteredData);
+      setState(sortedData);
       setLoading(false);
     });
 
