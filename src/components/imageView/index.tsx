@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ImageViewStyle } from './Styled';
+import { ImageViewStyle, PaginationStyle } from './Styled';
 import useModal from '../../hooks/useModal';
 import { DetailImageModal } from '../Modal';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getDocs, onSnapshot, collection, query, orderBy, limit, where } from 'firebase/firestore';
+import { getDocs, onSnapshot, collection, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md'; // ✅ React Icons 추가
 
 interface ImageData {
   id: string;
@@ -16,7 +17,6 @@ interface ImageData {
   title: string;
   prompt: string;
   commentCount: number;
-  generatedPrompt?: string;
   postpassword: string;
 }
 
@@ -25,16 +25,19 @@ interface ImageViewProps {
   searchQuery: string;
 }
 
+const ITEMS_PER_PAGE = 12; // 한 페이지당 9개씩 표시
+
 const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [latestImages, setLatestImages] = useState<ImageData[]>([]);
   const [oldestImages, setOldestImages] = useState<ImageData[]>([]);
   const [popularImages, setPopularImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const { openModal } = useModal();
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -44,8 +47,13 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     arrows: true,
   };
 
+  useEffect(() => {
+    setCurrentPage(1); // 검색할 때 페이지를 1로 초기화
+  }, [searchQuery]);
+
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
+    setCurrentPage(1); // 탭을 변경할 때 페이지를 1로 초기화
   };
 
   const openDetailModal = (
@@ -81,14 +89,9 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     setLoading(true);
     const imageCollection = collection(db, 'images');
 
-    let q;
-    if (searchQuery) {
-      q = query(imageCollection, orderBy(orderField, orderDirection), limit(50)); // 50개까지만 가져오기
-    } else {
-      q = isSortingByComments
-        ? query(imageCollection, orderBy('createdAt', 'desc'), limit(10))
-        : query(imageCollection, orderBy(orderField, orderDirection), limit(10));
-    }
+    const q = isSortingByComments
+      ? query(imageCollection, orderBy('commentCount', 'desc'), limit(36))
+      : query(imageCollection, orderBy(orderField, orderDirection), limit(36));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const imageData = await Promise.all(
@@ -110,7 +113,6 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
         }),
       );
 
-      // 검색어가 있을 경우 필터링
       const filteredData = searchQuery
         ? imageData.filter(
             (image) =>
@@ -118,10 +120,6 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
               image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
           )
         : imageData;
-
-      if (isSortingByComments) {
-        filteredData.sort((a, b) => b.commentCount - a.commentCount);
-      }
 
       setState(filteredData);
       setLoading(false);
@@ -156,21 +154,16 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     };
   }, [searchQuery]);
 
-  const filterImages = (images: ImageData[]) => {
-    return images.filter(
-      (image) =>
-        image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+  const paginateImages = (images: ImageData[]) => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return images.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   };
 
   const renderImages = (images: ImageData[]) => {
-    const filteredImages = filterImages(images);
-
     if (deviceType === 'mobile') {
-      return filteredImages.length > 0 ? (
+      return (
         <Slider {...settings}>
-          {filteredImages.map((image) => (
+          {images.map((image) => (
             <div
               key={image.id}
               onClick={() =>
@@ -192,39 +185,51 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
             </div>
           ))}
         </Slider>
-      ) : (
-        <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
       );
     } else {
-      return filteredImages.length > 0 ? (
-        <div className="grid-container">
-          {filteredImages.map((image, index) => (
-            <div
-              className={`grid-item item${index + 1}`}
-              onClick={() =>
-                openDetailModal(
-                  image.id,
-                  image.url,
-                  image.description,
-                  image.title,
-                  image.prompt,
-                  image.postpassword,
-                )
-              }
-              key={image.id}
+      return (
+        <>
+          <div className="grid-container">
+            {paginateImages(images).map((image, index) => (
+              <div
+                className={`grid-item item${index + 1}`}
+                key={image.id}
+                onClick={() =>
+                  openDetailModal(
+                    image.id,
+                    image.url,
+                    image.description,
+                    image.title,
+                    image.prompt,
+                    image.postpassword,
+                  )
+                }
+              >
+                <img
+                  src={image.url}
+                  alt={image.description}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <span className="comment-count">{image.commentCount} Comments</span>
+              </div>
+            ))}
+          </div>
+          <PaginationStyle>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
             >
-              <img
-                src={image.url}
-                alt={image.description}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <span className="comment-count">{image.commentCount} Comments</span>
-              <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
+              <MdNavigateBefore size={24} />
+            </button>
+            <span>{currentPage}</span>
+            <button
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage * ITEMS_PER_PAGE >= images.length}
+            >
+              <MdNavigateNext size={24} />
+            </button>
+          </PaginationStyle>
+        </>
       );
     }
   };
@@ -234,55 +239,27 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
       <section className="grid-section">
         <div className="tab-menu">
           <div className="tabs">
-            <button
-              className={`tab-link ${activeTab === 'tab1' ? 'active' : ''}`}
-              onClick={() => handleTabClick('tab1')}
-            >
-              최신순
-            </button>
-            <button
-              className={`tab-link ${activeTab === 'tab2' ? 'active' : ''}`}
-              onClick={() => handleTabClick('tab2')}
-            >
-              오래된 순
-            </button>
-            <button
-              className={`tab-link ${activeTab === 'tab3' ? 'active' : ''}`}
-              onClick={() => handleTabClick('tab3')}
-            >
-              댓글 많은 순
-            </button>
+            {['tab1', 'tab2', 'tab3'].map((tab, idx) => (
+              <button
+                key={idx}
+                className={`tab-link ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => handleTabClick(tab)}
+              >
+                {['최신순', '오래된 순', '댓글 많은 순'][idx]}
+              </button>
+            ))}
           </div>
           <div className="tab-content">
             {loading ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '200px',
-                }}
-              >
-                <CircularProgress />
-              </div>
+              <CircularProgress />
             ) : (
-              <>
-                {activeTab === 'tab1' && (
-                  <div className="tab-pane">
-                    <div>{renderImages(latestImages)}</div>
-                  </div>
-                )}
-                {activeTab === 'tab2' && (
-                  <div className="tab-pane">
-                    <div>{renderImages(oldestImages)}</div>
-                  </div>
-                )}
-                {activeTab === 'tab3' && (
-                  <div className="tab-pane">
-                    <div>{renderImages(popularImages)}</div>
-                  </div>
-                )}
-              </>
+              renderImages(
+                activeTab === 'tab1'
+                  ? latestImages
+                  : activeTab === 'tab2'
+                    ? oldestImages
+                    : popularImages,
+              )
             )}
           </div>
         </div>

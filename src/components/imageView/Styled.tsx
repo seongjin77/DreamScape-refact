@@ -44,33 +44,17 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
       .tab-content {
         .grid-container {
           display: ${(props) => (props.deviceType === 'mobile' ? '' : 'grid')};
-          grid-template-areas: ${(props) =>
-            props.deviceType === 'mobile'
-              ? `
-          'item1'
-          'item2'
-          'item3'
-        `
-              : props.deviceType === 'tablet'
-                ? `
-          'item1 item2 item3 item4'
-          'item1 item5 item6 item7'
-          'item8 item9 item6 item10'
-        `
-                : `
-          'item1 item2 item3 item4'
-          'item1 item5 item6 item7'
-          'item8 item9 item6 item10'
-        `};
           gap: 16px;
           max-width: 100%;
+          grid-template-columns: repeat(4, 1fr);
+          height: auto;
         }
 
         /* 그리드 아이템 스타일 */
         .grid-item {
           background-color: var(--gray-color);
           border-radius: 12px;
-          height: ${(props) => (props.deviceType === 'tablet' || 'mobile' ? '100%' : '200px')};
+          height: 250px;
           overflow: hidden;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           transition: transform 0.3s;
@@ -126,52 +110,6 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
             left: 10px;
           }
         }
-
-        .item1 {
-          grid-area: item1;
-          height: 100%;
-        }
-
-        .item2 {
-          grid-area: item2;
-          height: ${(props) => (props.deviceType === 'tablet' || 'mobile' ? '100%' : '200px')};
-        }
-
-        .item3 {
-          grid-area: item3;
-          height: 100%;
-        }
-
-        .item4 {
-          grid-area: item4;
-          height: ${(props) => (props.deviceType === 'tablet' || 'mobile' ? '100%' : '200px')};
-        }
-
-        .item5 {
-          grid-area: item5;
-          height: ${(props) => (props.deviceType === 'tablet' || 'mobile' ? '100%' : '200px')};
-        }
-
-        .item6 {
-          grid-area: item6;
-          height: 100%;
-        }
-
-        .item7 {
-          grid-area: item7;
-        }
-
-        .item8 {
-          grid-area: item8;
-        }
-
-        .item9 {
-          grid-area: item9;
-        }
-
-        .item9 {
-          grid-area: item10;
-        }
       }
     }
   }
@@ -217,5 +155,43 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
         }
       }
     }
+  }
+`;
+
+export const PaginationStyle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 30px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 5px;
+    font-size: 16px;
+    border: none;
+    background-color: var(--blue-color);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: #1565c0;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--blue-color);
   }
 `;
