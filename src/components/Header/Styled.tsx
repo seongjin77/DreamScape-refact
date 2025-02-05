@@ -28,6 +28,7 @@ export const HeaderStyle = styled.header`
 
       .title-wrapper {
         color: rgba(0, 0, 0, 0.8);
+        cursor: pointer;
 
         img {
           width: 138px;

@@ -12,6 +12,10 @@ const Headers: React.FC = () => {
     setIsScrolled(window.scrollY > 0);
   };
 
+  const handleLogoClick = () => {
+    window.location.reload();
+  };
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -24,7 +28,7 @@ const Headers: React.FC = () => {
       <div className={`header-wrapper ${isScrolled ? 'scrolled' : ''}`}>
         <div className="menu-item-wrapper">
           <div className="title-wrapper">
-            <img src={Logo} />
+            <img src={Logo} onClick={handleLogoClick} />
           </div>
 
           <nav className="web-nav-list-wrapper" />

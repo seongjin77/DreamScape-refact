@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const MainStyle = styled.div<{ deviceType: string }>`
   main {
     width: 100%;
+    min-height: 100vh;
     padding-top: 80px;
     max-width: 1080px;
     margin: 0 auto;
