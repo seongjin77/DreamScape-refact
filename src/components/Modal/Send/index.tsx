@@ -21,6 +21,8 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
   const [title, setTitle] = useState<string>('');
   const [postpassword, setPostpassword] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
   const { closeModal } = useModal();
   const { deviceType } = useDeviceType();
 
@@ -41,6 +43,10 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
       return;
     }
 
+    if (isUploading) return; // 🔹 중복 실행 방지
+
+    setIsUploading(true); // 🔹 업로드 시작 → 버튼 비활성화
+
     try {
       await uploadImageFromUrl(imageUrl, description, title, prompt, postpassword);
       console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
@@ -49,8 +55,11 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
       closeModal('SendImageModal');
     } catch (error) {
       console.error('Send 컴포넌트 데이터 업로드 실패:', error);
+    } finally {
+      setIsUploading(false); // 🔹 업로드 완료 후 버튼 다시 활성화
     }
   };
+
   const handleImgDownload = () => {
     if (!imageUrl) return;
 
@@ -187,8 +196,8 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
               뒤로가기
             </Button>
           ) : null}
-          <button className="upload-btn" onClick={handleImgUpload}>
-            메인에 업로드
+          <button className="upload-btn" onClick={handleImgUpload} disabled={isUploading}>
+            {isUploading ? '업로드 중...' : '메인에 업로드'}
           </button>
         </div>
       </CommentModalStyle>

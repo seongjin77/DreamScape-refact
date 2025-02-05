@@ -7,7 +7,7 @@ export const PromptInputStyle = styled.div<{ deviceType: string }>`
     flex-direction: ${(props) => (props.deviceType === 'mobile' ? 'column' : 'row')};
     gap: 20px;
     width: 100%;
-    padding: 20px;
+    padding: 20px 0;
     justify-content: center;
     align-items: center;
     textarea {

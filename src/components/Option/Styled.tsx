@@ -5,7 +5,7 @@ export const OptionStyld = styled.div`
   .option-wrapper {
     display: flex;
     flex-direction: row;
-    padding: 0 20px;
+
     width: 100%;
     justify-content: flex-start;
     align-items: center;

@@ -42,8 +42,6 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
       }
 
       .tab-content {
-        padding: 20px;
-
         .grid-container {
           display: ${(props) => (props.deviceType === 'mobile' ? '' : 'grid')};
           grid-template-areas: ${(props) =>

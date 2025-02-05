@@ -10,6 +10,7 @@ export const MainStyle = styled.div<{ deviceType: string }>`
 
   .contents {
     width: 100%;
+    padding: 20px;
     padding-top: 50px;
     display: flex;
     flex-direction: column;

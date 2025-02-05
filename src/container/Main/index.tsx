@@ -8,16 +8,16 @@ import Footer from '../../components/Footer';
 import MobilePromptInput from '../../components/MobilePromptInput';
 
 import { useDeviceType } from '../../hooks/useDeviceType';
+import SearchBar from '../../components/SeachBar';
 
 const Main: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
   const { deviceType } = useDeviceType();
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handlePromptGenerated = (generatedPrompt: string) => {
     setPrompt(generatedPrompt);
   };
-
-  // 모바일 일시 body쪽 스크롤 차단
 
   useEffect(() => {
     const body = document.querySelector('body') as HTMLElement;
@@ -48,7 +48,9 @@ const Main: React.FC = () => {
           </div>
           <Option onPromptGenerated={handlePromptGenerated} />
           <PromptInput generatedPrompt={prompt} />
-          <ImageView deviceType={deviceType} />
+          <SearchBar onSearch={setSearchQuery} />
+
+          <ImageView deviceType={deviceType} searchQuery={searchQuery} />
         </section>
       </main>
       <MobilePromptInput />

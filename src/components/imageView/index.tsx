@@ -3,7 +3,7 @@ import { ImageViewStyle } from './Styled';
 import useModal from '../../hooks/useModal';
 import { DetailImageModal } from '../Modal';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getDocs, onSnapshot, collection, query, orderBy, limit } from 'firebase/firestore';
+import { getDocs, onSnapshot, collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -20,9 +20,12 @@ interface ImageData {
   postpassword: string;
 }
 
-const ImageView: React.FC<{
+interface ImageViewProps {
   deviceType: string;
-}> = ({ deviceType }) => {
+  searchQuery: string;
+}
+
+const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [latestImages, setLatestImages] = useState<ImageData[]>([]);
   const [oldestImages, setOldestImages] = useState<ImageData[]>([]);
@@ -78,9 +81,14 @@ const ImageView: React.FC<{
     setLoading(true);
     const imageCollection = collection(db, 'images');
 
-    const q = isSortingByComments
-      ? query(imageCollection, orderBy('createdAt', 'desc'), limit(10))
-      : query(imageCollection, orderBy(orderField, orderDirection), limit(10));
+    let q;
+    if (searchQuery) {
+      q = query(imageCollection, orderBy(orderField, orderDirection), limit(50)); // 50개까지만 가져오기
+    } else {
+      q = isSortingByComments
+        ? query(imageCollection, orderBy('createdAt', 'desc'), limit(10))
+        : query(imageCollection, orderBy(orderField, orderDirection), limit(10));
+    }
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const imageData = await Promise.all(
@@ -102,21 +110,31 @@ const ImageView: React.FC<{
         }),
       );
 
+      // 검색어가 있을 경우 필터링
+      const filteredData = searchQuery
+        ? imageData.filter(
+            (image) =>
+              image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+        : imageData;
+
       if (isSortingByComments) {
-        imageData.sort((a, b) => b.commentCount - a.commentCount);
+        filteredData.sort((a, b) => b.commentCount - a.commentCount);
       }
 
-      setState(imageData);
+      setState(filteredData);
       setLoading(false);
     });
 
     return unsubscribe;
   };
+
   useEffect(() => {
     const fetchData = async () => {
       const unsubscribeLatest = await fetchImages('createdAt', 'desc', setLatestImages);
       const unsubscribeOldest = await fetchImages('createdAt', 'asc', setOldestImages);
-      const unsubscribePopular = await fetchImages('createdAt', 'desc', setPopularImages, true); // 🔹 댓글 많은 순 추가
+      const unsubscribePopular = await fetchImages('createdAt', 'desc', setPopularImages, true);
 
       return () => {
         unsubscribeLatest();
@@ -136,13 +154,23 @@ const ImageView: React.FC<{
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, [searchQuery]);
+
+  const filterImages = (images: ImageData[]) => {
+    return images.filter(
+      (image) =>
+        image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  };
 
   const renderImages = (images: ImageData[]) => {
+    const filteredImages = filterImages(images);
+
     if (deviceType === 'mobile') {
-      return images.length > 0 ? (
+      return filteredImages.length > 0 ? (
         <Slider {...settings}>
-          {images.map((image) => (
+          {filteredImages.map((image) => (
             <div
               key={image.id}
               onClick={() =>
@@ -168,9 +196,9 @@ const ImageView: React.FC<{
         <p style={{ textAlign: 'center' }}>이미지가 없습니다.</p>
       );
     } else {
-      return images.length > 0 ? (
+      return filteredImages.length > 0 ? (
         <div className="grid-container">
-          {images.map((image, index) => (
+          {filteredImages.map((image, index) => (
             <div
               className={`grid-item item${index + 1}`}
               onClick={() =>
@@ -190,7 +218,7 @@ const ImageView: React.FC<{
                 alt={image.description}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
-              <span className="comment-count">{image.commentCount} Comments</span>.
+              <span className="comment-count">{image.commentCount} Comments</span>
               <span className="file-size">{Math.floor(Math.random() * 1500 + 500)} KB</span>
             </div>
           ))}
@@ -203,7 +231,7 @@ const ImageView: React.FC<{
 
   return (
     <ImageViewStyle deviceType={deviceType}>
-      <section className="contents grid-section">
+      <section className="grid-section">
         <div className="tab-menu">
           <div className="tabs">
             <button
@@ -241,17 +269,17 @@ const ImageView: React.FC<{
               <>
                 {activeTab === 'tab1' && (
                   <div className="tab-pane">
-                    <div className="grid-container">{renderImages(latestImages)}</div>
+                    <div>{renderImages(latestImages)}</div>
                   </div>
                 )}
                 {activeTab === 'tab2' && (
                   <div className="tab-pane">
-                    <div className="grid-container">{renderImages(oldestImages)}</div>
+                    <div>{renderImages(oldestImages)}</div>
                   </div>
                 )}
                 {activeTab === 'tab3' && (
                   <div className="tab-pane">
-                    <div className="grid-container">{renderImages(popularImages)}</div>
+                    <div>{renderImages(popularImages)}</div>
                   </div>
                 )}
               </>

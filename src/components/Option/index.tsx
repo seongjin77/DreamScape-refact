@@ -7,8 +7,6 @@ interface OptionProps {
 }
 
 const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
-  const [activeImageCount, setActiveImageCount] = useState<number | null>(null);
-
   const fetchPromptFromGoogleAI = async () => {
     const API_KEY = '';
 
