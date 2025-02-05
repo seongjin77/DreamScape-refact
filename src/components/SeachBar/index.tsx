@@ -11,7 +11,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
-  placeholder = '검색어를 입력하세요(제목과 프롬프트가 검색됩니다)',
+  placeholder = '제목이나 프롬프트를 입력하세요',
 }) => {
   const [query, setQuery] = useState('');
 

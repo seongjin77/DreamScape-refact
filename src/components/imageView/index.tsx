@@ -79,6 +79,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
       ),
     });
   };
+
   const fetchImages = async (
     orderField: string,
     orderDirection: 'asc' | 'desc',
@@ -88,8 +89,8 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     setLoading(true);
     const imageCollection = collection(db, 'images');
 
-    // Firestore 쿼리 (댓글 순 정렬은 나중에 JS에서 정렬)
-    const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(36));
+    // Firestore에서 기본 정렬 (createdAt 기준)
+    const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(50));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const imageData = await Promise.all(
@@ -97,7 +98,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
           const data = doc.data();
           const commentCollection = collection(db, `images/${doc.id}/comments`);
           const commentSnapshot = await getDocs(commentCollection);
-          const commentCount = commentSnapshot.size || 0; // ✅ 기본값 0 설정
+          const commentCount = commentSnapshot.size || 0;
 
           return {
             id: doc.id,
@@ -105,18 +106,34 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
             title: data.title || 'No Title',
             prompt: data.prompt || '',
             description: data.description || 'No description',
-            commentCount, // ✅ 댓글 개수 추가
+            commentCount,
             postpassword: data.postpassword || '',
+            createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
           };
         }),
       );
 
-      // ✅ 댓글 개수 기준으로 정렬 추가
-      const sortedData = isSortingByComments
-        ? imageData.sort((a, b) => b.commentCount - a.commentCount) // JS에서 정렬
+      // 🔎 검색 필터링 적용
+      let filteredData = searchQuery
+        ? imageData.filter(
+            (image) =>
+              image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
         : imageData;
 
-      setState(sortedData);
+      // 📌 댓글 많은 순 정렬 적용
+      if (isSortingByComments) {
+        filteredData = filteredData.sort((a, b) => b.commentCount - a.commentCount);
+      } else if (orderField === 'createdAt' && orderDirection === 'asc') {
+        // 📌 오래된 순 정렬 적용
+        filteredData = filteredData.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      } else if (orderField === 'createdAt' && orderDirection === 'desc') {
+        // 📌 최신순 정렬 적용
+        filteredData = filteredData.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      }
+
+      setState(filteredData);
       setLoading(false);
     });
 
@@ -155,10 +172,18 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   };
 
   const renderImages = (images: ImageData[]) => {
+    const filteredImages = searchQuery
+      ? images.filter(
+          (image) =>
+            image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : images;
+
     if (deviceType === 'mobile') {
       return (
         <Slider {...settings}>
-          {images.map((image) => (
+          {filteredImages.map((image) => (
             <div
               key={image.id}
               onClick={() =>
@@ -185,7 +210,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
       return (
         <>
           <div className="grid-container">
-            {paginateImages(images).map((image, index) => (
+            {paginateImages(filteredImages).map((image, index) => (
               <div
                 className={`grid-item item${index + 1}`}
                 key={image.id}
@@ -219,7 +244,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
             <span>{currentPage}</span>
             <button
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={currentPage * ITEMS_PER_PAGE >= images.length}
+              disabled={currentPage * ITEMS_PER_PAGE >= filteredImages.length}
             >
               <MdNavigateNext size={24} />
             </button>
