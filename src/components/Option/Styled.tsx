@@ -23,7 +23,7 @@ export const OptionStyld = styled.div`
 
       &.img-upload {
         border: none;
-        background: linear-gradient(to top, var(--skyblue-color) 0%, var(--blue-color) 100%);
+        background: var(--blue-color);
         transition: transform 0.5s ease;
         border-radius: 15px;
         color: var(--white-color);
@@ -37,7 +37,7 @@ export const OptionStyld = styled.div`
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(to top, var(--skyblue-color) 100%, var(--blue-color) 0%);
+          background: var(--blue-color);
           transition: transform 0.5s ease;
           border-radius: 15px;
           z-index: -1;

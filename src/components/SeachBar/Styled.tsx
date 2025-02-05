@@ -17,7 +17,14 @@ export const Styled = styled.div`
     border-radius: 15px;
     resize: none;
     outline: none;
-    transition: border 1s ease;
+    transition: border 0.2 s ease;
+    border: 1px solid #d2d2d2;
+    &:hover {
+      border: 2px solid var(--blue-color);
+    }
+    fieldset {
+      border: none;
+    }
   }
 `;
 

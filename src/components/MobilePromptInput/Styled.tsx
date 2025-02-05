@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-export const PromptInputStyle = styled.div<{ deviceType: string; isVisible: boolean }>`
+export const PromptInputStyle = styled.div<{
+  deviceType: string;
+  isVisible: boolean;
+  isCollapsed: boolean;
+}>`
   position: fixed;
   bottom: 10%;
   left: 50%;
@@ -9,37 +13,46 @@ export const PromptInputStyle = styled.div<{ deviceType: string; isVisible: bool
   width: 100%;
   background-color: rgba(182, 182, 182, 0.6);
   border-radius: 15px;
-  transition: 0.8s;
-  opacity: ${(props) => (props.isVisible ? '1' : '0')};
-  visibility: ${(props) => (props.isVisible ? 'visible' : 'hidden')};
+  transition: 0.5s;
+  opacity: ${(props) => (props.isVisible && !props.isCollapsed ? '1' : '0')};
+  visibility: ${(props) => (props.isVisible && !props.isCollapsed ? 'visible' : 'hidden')};
+  height: ${(props) => (props.isCollapsed ? '0' : 'auto')};
+  overflow: hidden;
 
   .input-contents-wrapper {
     display: flex;
     flex-direction: row;
     gap: 10px;
     width: 100%;
-    padding: 10px;
+    padding: ${(props) => (props.isCollapsed ? '0' : '10px')};
     justify-content: center;
     align-items: center;
+    transition: padding 0.3s ease-in-out;
+
     textarea {
       box-sizing: border-box;
-      position: relative;
       width: 100%;
-      height: 50px;
-      padding: 14px 18px;
+      height: ${(props) => (props.isCollapsed ? '0' : '50px')};
+      padding: ${(props) => (props.isCollapsed ? '0' : '14px 18px')};
       background: var(--white-color);
       border: 2px solid var(--skyblue-color);
       border-radius: 15px;
       resize: none;
       outline: none;
-      transition: border 1s ease;
+      transition:
+        height 0.3s ease-in-out,
+        padding 0.3s ease-in-out;
+      visibility: ${(props) => (props.isCollapsed ? 'hidden' : 'visible')};
+
       &::placeholder {
         font-size: ${(props) => (props.deviceType === 'mobile' ? '12px' : '14px')};
       }
+
       &:focus {
         border: 2px solid var(--blue-color);
       }
     }
+
     button {
       position: relative;
       overflow: hidden;
@@ -49,32 +62,35 @@ export const PromptInputStyle = styled.div<{ deviceType: string; isVisible: bool
       align-items: center;
       width: 80px;
       height: 50px;
-      margin: 0 auto;
-      background: linear-gradient(to top, var(--skyblue-color) 0%, var(--blue-color) 100%);
+      background: var(--blue-color);
       border-radius: 15px;
       color: #fff;
       font-size: 14px;
       cursor: pointer;
-      z-index: 1;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to top, var(--skyblue-color) 100%, var(--blue-color) 0%);
-        transition: transform 0.5s ease;
-        border-radius: 15px;
-        z-index: -1;
-        transform: scaleY(1);
-        transform-origin: bottom;
-      }
-
-      &:hover::before {
-        transform: scaleY(0);
-      }
+      transition: background 0.3s ease-in-out;
     }
+  }
+`;
+
+/* 오른쪽 상단의 펼치기/접기 버튼 */
+export const ToggleButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--blue-color);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #1565c0;
+  }
+
+  svg {
+    vertical-align: middle;
   }
 `;
