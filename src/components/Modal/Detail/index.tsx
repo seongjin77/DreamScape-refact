@@ -89,7 +89,7 @@ const AddComment = ({
         </div>
         <div className="form">
           <label htmlFor="">패스워드</label>
-          <input value={password} type="text" onChange={(e) => setPassword(e.target.value)} />
+          <input value={password} type="password" onChange={(e) => setPassword(e.target.value)} />
         </div>
       </div>
       <div className="textarea-add">
