@@ -12,7 +12,15 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 
-const firebaseConfig = {};
+const firebaseConfig = {
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: '',
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -25,7 +33,7 @@ export const db = initializeFirestore(
     host: 'asia-northeast3-firestore.googleapis.com',
     ssl: true,
   },
-  'img-db-test',
+  'img-data',
 );
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -36,10 +44,11 @@ async function uploadImageFromUrl(
   description: string,
   title: string,
   prompt: string,
+  postpassword: string, // 🔹 postpassword 사용
 ) {
   try {
-    if (!imageUrl || !description || !title || !prompt) {
-      throw new Error('이미지 URL, 제목, 설명을 모두 입력해주세요.');
+    if (!imageUrl || !description || !title || !prompt || !postpassword) {
+      throw new Error('이미지 URL, 제목, 설명, 비밀번호를 모두 입력해주세요.');
     }
 
     // 1. 이미지 URL의 데이터를 가져오기
@@ -87,6 +96,7 @@ async function uploadImageFromUrl(
       description,
       title,
       prompt,
+      postpassword,
       url: downloadUrl,
       createdAt: serverTimestamp(),
     };
