@@ -48,6 +48,10 @@ export const PromptInputStyle = styled.div<{ deviceType: string }>`
       font-size: 20px;
       cursor: pointer;
       z-index: 1;
+      transition: 0.3s ease-in;
+      &:hover {
+        transform: scale(1.05);
+      }
     }
   }
 `;

@@ -6,6 +6,7 @@ import Option from '../../components/Option';
 import ImageView from '../../components/imageView';
 import Footer from '../../components/Footer';
 import MobilePromptInput from '../../components/MobilePromptInput';
+import TopButton from '../../components/TopButton';
 
 import { useDeviceType } from '../../hooks/useDeviceType';
 import SearchBar from '../../components/SeachBar';
@@ -55,6 +56,7 @@ const Main: React.FC = () => {
       </main>
       <MobilePromptInput />
       <Footer />
+      <TopButton />
     </MainStyle>
   );
 };

@@ -55,42 +55,54 @@ export const PromptInputStyle = styled.div<{
 
     button {
       position: relative;
-      overflow: hidden;
       border: none;
       display: flex;
       justify-content: center;
       align-items: center;
       width: 80px;
       height: 50px;
-      background: var(--blue-color);
+      background: #1565c0;
       border-radius: 15px;
       color: #fff;
       font-size: 14px;
       cursor: pointer;
-      transition: background 0.3s ease-in-out;
+      transition:
+        background 0.3s ease-in-out,
+        opacity 0.3s ease-in-out;
+
+      &:hover {
+        background: linear-gradient(to top, var(--skyblue-color) 100%, var(--blue-color) 0%);
+      }
+
+      &:disabled {
+        opacity: 0.5; // ✅ 버튼 비활성화 시 투명도 적용
+        cursor: not-allowed; // ✅ 클릭 불가능한 상태
+        background: #1565c0;
+      }
     }
   }
 `;
 
-/* 오른쪽 상단의 펼치기/접기 버튼 */
-export const ToggleButton = styled.button`
+/* 펼치기/접기 버튼 */
+export const ToggleButton = styled.button<{
+  isVisible: boolean;
+}>`
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   background-color: var(--blue-color);
   color: white;
   border: none;
-  padding: 10px;
-  border-radius: 10%;
+  padding: 10px 14px;
+  border-radius: 15px;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease-in-out;
+  opacity: ${(props) => (props.isVisible ? '1' : '0')};
+  transition:
+    0.3s ease-in-out,
+    transform 0.2s;
 
   &:hover {
-    background-color: #1565c0;
-  }
-
-  svg {
-    vertical-align: middle;
+    transform: scale(1.05);
   }
 `;

@@ -3,7 +3,6 @@ import { PromptInputStyle, ToggleButton } from './Styled';
 import SendImage from '../Modal/Send';
 import useModal from '../../hooks/useModal';
 import { useDeviceType } from '../../hooks/useDeviceType';
-import { MdExpandLess, MdExpandMore } from 'react-icons/md'; // ✅ React Icons 추가
 
 interface PromptInputProps {
   generatedPrompt?: string;
@@ -19,7 +18,6 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
   useEffect(() => {
     if (generatedPrompt && generatedPrompt !== prompt) {
       setPrompt(generatedPrompt);
-      console.log('Generated Prompt:', generatedPrompt);
     }
   }, [generatedPrompt]);
 
@@ -42,13 +40,13 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
       if (!response.ok) throw new Error('Failed to fetch image');
       const url = response.url;
       setImageUrl(url);
-      console.log('Fetched Image URL:', url);
     } catch (error) {
       console.error('Error fetching image:', error);
     }
   };
 
   const handleSubmitButton = (): void => {
+    if (!prompt.trim()) return; // ✅ 빈 값일 경우 실행하지 않음
     openModal({
       id: 'SendImageModal',
       component: <SendImage fetchImage={fetchImage} deviceType={deviceType} prompt={prompt} />,
@@ -66,22 +64,25 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.ctrlKey) {
                   e.preventDefault();
-                  handleSubmitButton();
+                  if (prompt.trim()) handleSubmitButton();
                 } else if (e.key === 'Enter' && e.ctrlKey) {
                   setPrompt((prev) => prev + '\n');
                 }
               }}
               placeholder="AI가 생성할 내용에 대한 설명을 입력하세요"
             />
-            <button onClick={handleSubmitButton} type="button">
+            <button
+              onClick={handleSubmitButton}
+              type="button"
+              disabled={!prompt.trim()} // ✅ 입력값 없으면 비활성화
+            >
               생성하기
             </button>
           </div>
         )}
       </PromptInputStyle>
 
-      {/* 펼치기/접기 버튼 */}
-      <ToggleButton onClick={() => setIsCollapsed((prev) => !prev)}>
+      <ToggleButton isVisible={isVisible} onClick={() => setIsCollapsed((prev) => !prev)}>
         {isCollapsed ? '이미지 생성창 펼치기' : '생성창 접기'}
       </ToggleButton>
     </>

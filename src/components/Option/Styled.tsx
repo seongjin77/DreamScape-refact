@@ -30,22 +30,8 @@ export const OptionStyld = styled.div`
         cursor: pointer;
         z-index: 1;
         overflow: hidden;
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: var(--blue-color);
-          transition: transform 0.5s ease;
-          border-radius: 15px;
-          z-index: -1;
-          transform: scaleY(1);
-          transform-origin: top;
-        }
-        &:hover::before {
-          transform: scaleY(0);
+        &:hover {
+          transform: scale(1.05);
         }
       }
     }
