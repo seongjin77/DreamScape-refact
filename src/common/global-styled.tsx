@@ -66,6 +66,11 @@ const GlobalStyle = createGlobalStyle`
 
   }
 
+  /* Mui custom */
+  .MuiButtonBase-root  {
+    border-radius: 10px !important;
+  }
+
 
 `;
 

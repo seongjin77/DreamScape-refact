@@ -66,18 +66,15 @@ export const PromptInputStyle = styled.div<{
       color: #fff;
       font-size: 14px;
       cursor: pointer;
-      transition:
-        background 0.3s ease-in-out,
-        opacity 0.3s ease-in-out;
-
-      &:hover {
-        background: linear-gradient(to top, var(--skyblue-color) 100%, var(--blue-color) 0%);
-      }
+      transition: all 0.3s ease-in-out;
 
       &:disabled {
         opacity: 0.5; // ✅ 버튼 비활성화 시 투명도 적용
         cursor: not-allowed; // ✅ 클릭 불가능한 상태
         background: #1565c0;
+      }
+      &:hover {
+        transform: scale(1.05);
       }
     }
   }

@@ -141,7 +141,8 @@ export const ImageWrapper = styled.div`
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 10px;
+    gap: 20px;
+    padding-top: 20px;
     .prompt-area {
       width: 100%;
       display: flex;
@@ -149,7 +150,7 @@ export const ImageWrapper = styled.div`
       flex-direction: column;
       gap: 10px;
       .area-title {
-        font-size: 16px;
+        font-size: 14px;
         color: var(--white-color);
         font-weight: 700;
       }
@@ -164,6 +165,8 @@ export const ImageWrapper = styled.div`
         width: 100%;
         overflow-y: auto;
         padding: 15px 20px;
+        display: flex;
+        align-items: center;
       }
     }
     .title-area {
@@ -173,9 +176,9 @@ export const ImageWrapper = styled.div`
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      gap: 15px;
+      gap: 5px;
       .area-title {
-        font-size: 18px;
+        font-size: 14px;
         color: var(--white-color);
         font-weight: 700;
       }
@@ -194,6 +197,8 @@ export const ImageWrapper = styled.div`
         color: #ffffff;
         font-size: 14px;
         word-break: break-word;
+        display: flex;
+        align-items: center;
       }
     }
     .description-area {
@@ -201,9 +206,9 @@ export const ImageWrapper = styled.div`
       display: flex;
       align-items: flex-start;
       flex-direction: column;
-      gap: 10px;
+      gap: 5px;
       .area-title {
-        font-size: 16px;
+        font-size: 14px;
         color: var(--white-color);
         font-weight: 700;
       }
@@ -218,6 +223,8 @@ export const ImageWrapper = styled.div`
         color: #ffffff;
         font-size: 14px;
         word-break: break-word;
+        display: flex;
+        align-items: center;
       }
     }
   }
@@ -348,16 +355,19 @@ export const CommentModalStyle = styled.div<{ openComment: boolean; deviceType: 
           height: 30px;
           padding: 14px 18px;
           background: var(--white-color);
-          border: 2px solid var(--skyblue-color);
+          border: none;
           border-radius: 10px;
           resize: none;
-          outline: none;
+          outline: 1px solid #d2d2d2;
           transition: border 1s ease;
           &::placeholder {
             font-size: 14px;
           }
+          &:hover {
+            outline: 2px solid var(--blue-color);
+          }
           &:focus {
-            border: 2px solid var(--blue-color);
+            outline: 2px solid var(--blue-color);
           }
         }
       }
@@ -375,16 +385,19 @@ export const CommentModalStyle = styled.div<{ openComment: boolean; deviceType: 
       height: ${(props) => (props.deviceType === 'mobile' ? '60px' : '100px')};
       padding: 14px 18px;
       background: var(--white-color);
-      border: 2px solid var(--skyblue-color);
+      border: none;
+      outline: 1px solid #d2d2d2;
       border-radius: 14px;
       resize: none;
-      outline: none;
       transition: border 1s ease;
       &::placeholder {
         font-size: 14px;
       }
+      &:hover {
+        outline: 2px solid var(--blue-color);
+      }
       &:focus {
-        border: 2px solid var(--blue-color);
+        outline: 2px solid var(--blue-color);
       }
     }
 

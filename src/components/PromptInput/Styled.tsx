@@ -17,19 +17,19 @@ export const PromptInputStyle = styled.div<{ deviceType: string }>`
       height: 100px;
       padding: 14px 18px;
       background: var(--white-color);
-      border: 1px solid #d2d2d2;
+      outline: 1px solid #d2d2d2;
       border-radius: 15px;
       resize: none;
-      outline: none;
       transition: border 0.2 s ease;
+      border: none;
       &::placeholder {
         font-size: 14px;
       }
       &:hover {
-        border: 2px solid var(--blue-color);
+        outline: 2px solid var(--blue-color);
       }
       &:focus {
-        border: 2px solid var(--blue-color);
+        outline: 2px solid var(--blue-color);
       }
     }
     button {

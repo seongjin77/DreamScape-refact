@@ -116,9 +116,9 @@ export const CommentModalStyle = styled.div<{
   height: ${(props) => {
     switch (props.deviceType) {
       case 'mobile':
-        return '70vh';
+        return '80vh';
       case 'tablet':
-        return '70vh';
+        return '80vh';
       case 'desktop':
       default:
         return 'calc(100vh - 50px)';
@@ -236,17 +236,20 @@ export const CommentModalStyle = styled.div<{
         height: 50px;
         padding: 14px 18px;
         background: var(--white-color);
-        border: 2px solid var(--skyblue-color);
+        border: none;
         border-radius: 15px;
         resize: none;
-        outline: none;
+        outline: 1px solid #d2d2d2;
         transition: border 1s ease;
         font-size: 16px;
         &::placeholder {
           font-size: 14px;
         }
+        &:hover {
+          outline: 2px solid var(--blue-color);
+        }
         &:focus {
-          border: 2px solid var(--blue-color);
+          outline: 2px solid var(--blue-color);
         }
       }
       .description-area {
@@ -256,17 +259,20 @@ export const CommentModalStyle = styled.div<{
         height: 100%;
         padding: 14px 18px;
         background: var(--white-color);
-        border: 2px solid var(--skyblue-color);
+        border: none;
         border-radius: 15px;
         resize: none;
-        outline: none;
+        outline: 1px solid #d2d2d2;
         transition: border 1s ease;
         font-size: 16px;
         &::placeholder {
           font-size: 14px;
         }
+        &:hover {
+          outline: 2px solid var(--blue-color);
+        }
         &:focus {
-          border: 2px solid var(--blue-color);
+          outline: 2px solid var(--blue-color);
         }
       }
     }
@@ -283,27 +289,13 @@ export const CommentModalStyle = styled.div<{
       overflow: hidden;
       border: none;
       width: 100%;
-      height: 60px;
+      height: 6vh;
       background: linear-gradient(to top, var(--white-color) 0%, var(--gray-color) 100%);
       border-radius: 15px;
       color: var(--black-color);
       font-size: 18px;
       cursor: pointer;
       z-index: 1;
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to top, var(--white-color) 100%, var(--gray-color) 0%);
-        transition: transform 0.5s ease;
-        border-radius: 15px;
-        z-index: -1;
-        transform: scaleY(1);
-        transform-origin: bottom;
-      }
 
       &:hover::before {
         transform: scaleY(0);
@@ -314,31 +306,17 @@ export const CommentModalStyle = styled.div<{
       overflow: hidden;
       border: none;
       width: 100%;
-      height: 60px;
-      background: linear-gradient(to top, var(--skyblue-color) 0%, var(--blue-color) 100%);
-      border-radius: 15px;
+      height: 6vh;
+      background: var(--blue-color);
+      border-radius: 10px;
       color: #fff;
       font-size: 18px;
       cursor: pointer;
       z-index: 1;
+      transition: 0.3s ease-in;
 
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to top, var(--skyblue-color) 100%, var(--blue-color) 0%);
-        transition: transform 0.5s ease;
-        border-radius: 15px;
-        z-index: -1;
-        transform: scaleY(1);
-        transform-origin: bottom;
-      }
-
-      &:hover::before {
-        transform: scaleY(0);
+      &:hover {
+        background-color: #1565c0;
       }
     }
   }

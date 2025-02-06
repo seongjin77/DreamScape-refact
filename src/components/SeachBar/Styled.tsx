@@ -16,14 +16,12 @@ export const Styled = styled.div`
     background: var(--white-color);
     border-radius: 15px;
     resize: none;
-    outline: none;
     transition: border 0.2 s ease;
-    border: 1px solid #d2d2d2;
-    &:hover {
-      border: 2px solid var(--blue-color);
-    }
+    border: none;
     fieldset {
-      border: none;
+      &:hover {
+        outline: 2px solid var(--blue-color);
+      }
     }
   }
 `;
