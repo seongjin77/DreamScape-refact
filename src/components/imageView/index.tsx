@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ImageViewStyle, PaginationStyle } from './Styled';
 import useModal from '../../hooks/useModal';
 import { DetailImageModal } from '../Modal';
@@ -35,17 +35,25 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { openModal } = useModal();
+  const sliderRef = useRef<Slider | null>(null);
 
   const settings = {
     dots: false,
     infinite: true,
-    speed: 500,
+    speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
     arrows: true,
   };
+
+  useEffect(() => {
+    setCurrentPage(1); // 검색할 때 페이지를 1로 초기화
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(0); // 🔹 데이터 변경 시 첫 번째 슬라이드로 이동
+    }
+  }, [latestImages]); // 🔹 최신 이미지 변경 감지
 
   useEffect(() => {
     setCurrentPage(1); // 검색할 때 페이지를 1로 초기화
@@ -182,8 +190,8 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
 
     if (deviceType === 'mobile') {
       return (
-        <Slider {...settings}>
-          {filteredImages.map((image) => (
+        <Slider ref={sliderRef} {...settings}>
+          {images.map((image) => (
             <div
               key={image.id}
               onClick={() =>
