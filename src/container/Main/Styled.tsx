@@ -30,11 +30,21 @@ export const MainStyle = styled.div<{ deviceType: string }>`
           props.deviceType === 'mobile' ? '21px' : props.deviceType === 'tablet' ? '36px' : '50px'};
         font-weight: 700;
         line-height: 1.2;
+        color: var(--blue-color);
+        span {
+          font-size: ${(props) =>
+            props.deviceType === 'mobile'
+              ? '24px'
+              : props.deviceType === 'tablet'
+                ? '40px'
+                : '54px'};
+          color: var(--skyblue-color);
+        }
       }
       p {
         font-size: ${(props) => (props.deviceType === 'mobile' ? '14px' : '16px')};
         line-height: 1.2;
-        color: rgb(94, 94, 94);
+        color: var(--black-color);
       }
     }
   }
