@@ -6,7 +6,7 @@ export const PromptInputStyle = styled.div<{
   isCollapsed: boolean;
 }>`
   position: fixed;
-  bottom: 10%;
+  bottom: ${(props) => (props.deviceType === 'mobile' ? '0%' : '10%')};
   left: 50%;
   transform: translateX(-50%);
   max-width: 640px;
@@ -69,8 +69,8 @@ export const PromptInputStyle = styled.div<{
       transition: all 0.3s ease-in-out;
 
       &:disabled {
-        opacity: 0.5; // ✅ 버튼 비활성화 시 투명도 적용
-        cursor: not-allowed; // ✅ 클릭 불가능한 상태
+        opacity: 0.5; //
+        cursor: not-allowed; //
         background: #1565c0;
       }
       &:hover {
@@ -80,7 +80,6 @@ export const PromptInputStyle = styled.div<{
   }
 `;
 
-/* 펼치기/접기 버튼 */
 export const ToggleButton = styled.button<{
   isVisible: boolean;
 }>`

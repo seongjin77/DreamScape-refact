@@ -52,6 +52,9 @@ export const PromptInputStyle = styled.div<{ deviceType: string }>`
       &:hover {
         transform: scale(1.05);
       }
+      &:disabled {
+        pointer-events: none;
+      }
     }
   }
 `;

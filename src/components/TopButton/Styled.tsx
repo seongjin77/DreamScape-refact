@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const TopButtonStyle = styled.button`
+export const TopButtonStyle = styled.button<{ deviceType: string }>`
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: ${(props) => (props.deviceType === 'mobile' ? '100px' : '30px')};
+  right: 20px;
   width: 50px;
   height: 50px;
   background-color: var(--blue-color);

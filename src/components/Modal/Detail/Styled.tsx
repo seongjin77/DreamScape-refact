@@ -80,6 +80,7 @@ export const ModalStyle = styled.div<{ openComment: boolean; deviceType: string 
       align-items: center;
       justify-content: center;
       .article-wrapper {
+        padding-top: 10px;
         display: flex;
         justify-content: center;
         gap: 10px;
@@ -132,7 +133,6 @@ export const ImageWrapper = styled.div`
     height: 40vh;
     max-height: 100%;
     border-radius: 10px;
-    margin-bottom: 10px;
   }
 
   .info-wrpper {

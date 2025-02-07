@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { OptionStyld } from './Styled';
+import { CircularProgress } from '@mui/material';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface OptionProps {
@@ -7,6 +8,8 @@ interface OptionProps {
 }
 
 const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
+  const [loading, setLoading] = useState(false);
+
   const fetchPromptFromGoogleAI = async () => {
     const API_KEY = '';
 
@@ -16,6 +19,7 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
       return;
     }
 
+    setLoading(true); // 로딩 상태 시작
     try {
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({
@@ -23,7 +27,7 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
       });
 
       const prompt =
-        'Make a short and creative prompt for AI image generation. Just give me the result value instead ,all korean only text';
+        'Make a short and creative prompt for AI image generation. Provide only the prompt text in Korean, without any additional formatting or labels.';
       const result = await model.generateContent(prompt);
 
       const generatedPrompt = result.response.text();
@@ -36,14 +40,20 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
       console.log(fallbackPrompt);
 
       onPromptGenerated(fallbackPrompt);
+    } finally {
+      setLoading(false); // 로딩 상태 종료
     }
   };
 
   return (
     <OptionStyld>
       <div className="option-wrapper">
-        <button className="select-item img-upload" onClick={fetchPromptFromGoogleAI}>
-          <span>프롬프트 추천</span>
+        <button
+          className="select-item img-upload"
+          onClick={fetchPromptFromGoogleAI}
+          disabled={loading}
+        >
+          <span>{loading ? <CircularProgress size={20} color="inherit" /> : '프롬프트 추천'}</span>
         </button>
       </div>
     </OptionStyld>

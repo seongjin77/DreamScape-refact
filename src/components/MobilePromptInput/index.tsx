@@ -13,7 +13,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
   const { deviceType } = useDeviceType();
   const { openModal } = useModal();
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false); // 접힘 상태 추가
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     if (generatedPrompt && generatedPrompt !== prompt) {

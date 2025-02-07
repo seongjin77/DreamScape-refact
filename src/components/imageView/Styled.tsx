@@ -9,6 +9,15 @@ const fadeIn = keyframes`
   }
 `;
 
+const borderExpandAnimation = keyframes`
+  from {
+    border-width: 0;
+  }
+  to {
+    border-width: 2px; 
+  }
+`;
+
 export const ImageViewStyle = styled.div<{ deviceType: string }>`
   width: 100%;
   .grid-section {
@@ -25,18 +34,21 @@ export const ImageViewStyle = styled.div<{ deviceType: string }>`
         gap: ${(props) => (props.deviceType === 'mobile' ? '20px' : '100px')};
 
         .tab-link {
-          padding: 10px 20px;
+          padding: 10px 5px;
           border: none;
           background: none;
           color: rgba(0, 0, 0, 0.4);
           cursor: pointer;
           font-size: 14px;
           transition: color 0.7s ease;
+          border-bottom: 0px solid transparent;
 
           &.active {
             border-bottom: 2px solid var(--blue-color);
             font-weight: bold;
             color: var(--blue-color);
+            border-bottom-color: currentColor;
+            animation: ${borderExpandAnimation} 0.3s ease-out forwards;
           }
         }
       }

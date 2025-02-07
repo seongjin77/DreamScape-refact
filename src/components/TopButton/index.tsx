@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { TopButtonStyle } from './Styled';
 import { MdKeyboardArrowUp } from 'react-icons/md';
 
-const TopButton: React.FC = () => {
+interface TopButtonProps {
+  deviceType: string; // 필수로 지정
+}
+
+const TopButton: React.FC<TopButtonProps> = ({ deviceType }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -21,7 +25,11 @@ const TopButton: React.FC = () => {
   };
 
   return (
-    <TopButtonStyle className={isVisible ? 'visible' : ''} onClick={handleScrollToTop}>
+    <TopButtonStyle
+      deviceType={deviceType}
+      className={isVisible ? 'visible' : ''}
+      onClick={handleScrollToTop}
+    >
       <MdKeyboardArrowUp size={28} />
     </TopButtonStyle>
   );

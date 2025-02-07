@@ -52,13 +52,12 @@ const Main: React.FC = () => {
           <Option onPromptGenerated={handlePromptGenerated} />
           <PromptInput generatedPrompt={prompt} />
           <SearchBar onSearch={setSearchQuery} />
-
           <ImageView deviceType={deviceType} searchQuery={searchQuery} />
         </section>
       </main>
       <MobilePromptInput />
       <Footer />
-      <TopButton />
+      <TopButton deviceType={deviceType} />
     </MainStyle>
   );
 };

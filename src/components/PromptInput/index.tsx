@@ -16,7 +16,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
   useEffect(() => {
     if (generatedPrompt && generatedPrompt !== prompt) {
       setPrompt(generatedPrompt);
-      console.log('Generated Prompt:', generatedPrompt);
+      // console.log('Generated Prompt:', generatedPrompt); // 제거
     }
   }, [generatedPrompt]);
 
@@ -28,7 +28,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
       if (!response.ok) throw new Error('Failed to fetch image');
       const url = response.url;
       setImageUrl(url);
-      console.log('Fetched Image URL:', url);
+      // console.log('Fetched Image URL:', url); // 제거
     } catch (error) {
       console.error('Error fetching image:', error);
     }

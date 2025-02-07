@@ -16,13 +16,17 @@ export const OptionStyld = styled.div`
       justify-content: space-between;
       align-items: center;
       position: relative;
-      padding: 5px 20px;
+      width: 100px;
+      height: 26px;
       gap: 5px;
       font-weight: 700;
       cursor: pointer;
 
       &.img-upload {
         border: none;
+        align-items: center;
+        display: flex;
+        justify-content: center;
         background: var(--blue-color);
         transition: transform 0.5s ease;
         border-radius: 15px;
