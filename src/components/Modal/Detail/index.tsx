@@ -258,8 +258,7 @@ const DetailImage = ({
   postpassword,
 }: DetailImageProps) => {
   const { closeModal, openModal } = useModal();
-  const { successToast } = useToast();
-  const { errorToast } = useToast();
+  const { successToast, errorToast } = useToast();
   const [openComment, setOpenComment] = useState<boolean>(false);
   const [commentValue, setCommentValue] = useState('');
   const [userId, setUserId] = useState('');
@@ -270,57 +269,58 @@ const DetailImage = ({
   const Postflag = useRef<string>('');
   const [isPostPass, setIsPostPass] = useState(false);
 
-  useEffect(() => {
-    const commentsRef = collection(db, `images/${id}/comments`);
-    const initialQuery = query(commentsRef, orderBy('createdAt', 'desc'), limit(10));
-
-    const unsubscribe = onSnapshot(initialQuery, (snapshot) => {
-      const newComments = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setCommentList(newComments);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   const openDescription = () => {
     setOpenComment(!openComment);
+  };
+
+  const fetchImageBlob = async (imageUrl: string): Promise<Blob> => {
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error(`이미지 요청 실패: ${response.statusText}`);
+    return response.blob();
+  };
+
+  const resizeImage = (image: HTMLImageElement, aspectRatio: string): HTMLCanvasElement => {
+    const [widthRatio, heightRatio] = aspectRatio.split('/').map(Number);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('캔버스 생성 실패');
+
+    const newWidth = image.naturalWidth;
+    const newHeight = (newWidth * heightRatio) / widthRatio;
+
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    ctx.drawImage(image, 0, 0, newWidth, newHeight);
+
+    return canvas;
+  };
+
+  const downloadImage = (canvas: HTMLCanvasElement, title: string = 'downloaded-image'): void => {
+    canvas.toBlob((blob) => {
+      if (!blob) throw new Error('Blob 생성 실패');
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${title}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }, 'image/png');
   };
 
   const handleImgDownload = async () => {
     if (!imageUrl) return;
 
     try {
-      const response = await fetch(imageUrl);
-      if (!response.ok) throw new Error('이미지 요청 실패');
-
-      const blob = await response.blob();
+      const blob = await fetchImageBlob(imageUrl);
       const img = new Image();
       img.src = URL.createObjectURL(blob);
 
       img.onload = () => {
-        const [widthRatio, heightRatio] = aspectRatio.split('/').map(Number);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        const newWidth = img.naturalWidth;
-        const newHeight = (newWidth * heightRatio) / widthRatio;
-
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-        canvas.toBlob((blob) => {
-          if (!blob) return;
-
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = `${title || 'downloaded-image'}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }, 'image/png');
+        const canvas = resizeImage(img, aspectRatio);
+        downloadImage(canvas, title);
+        URL.revokeObjectURL(img.src); // 메모리 해제
       };
     } catch (error) {
       console.error('이미지 다운로드 오류:', error);
@@ -364,6 +364,18 @@ const DetailImage = ({
       deletePost().catch((error) => console.error('게시물 삭제 실패:', error));
     }
   }, [isPostPass]);
+
+  useEffect(() => {
+    const commentsRef = collection(db, `images/${id}/comments`);
+    const initialQuery = query(commentsRef, orderBy('createdAt', 'desc'), limit(10));
+
+    const unsubscribe = onSnapshot(initialQuery, (snapshot) => {
+      const newComments = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setCommentList(newComments);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <ModalContainerStyle>
