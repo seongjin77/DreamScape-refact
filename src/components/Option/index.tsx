@@ -11,7 +11,7 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchPromptFromGoogleAI = useCallback(async () => {
-    const API_KEY = '';
+    const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
     if (!API_KEY) {
       console.error('API 키가 설정되지 않았습니다.');
