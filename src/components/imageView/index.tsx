@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ImageViewStyle, PaginationStyle } from './Styled';
 import useModal from '../../hooks/useModal';
 import { DetailImageModal } from '../Modal';
@@ -8,7 +8,7 @@ import { db } from '../../firebase/config';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md'; // ✅ React Icons 추가
+import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 
 interface ImageData {
   id: string;
@@ -25,7 +25,7 @@ interface ImageViewProps {
   searchQuery: string;
 }
 
-const ITEMS_PER_PAGE = 12; // 한 페이지당 9개씩 표시
+const ITEMS_PER_PAGE = 12;
 
 const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   const [activeTab, setActiveTab] = useState('tab1');
@@ -34,6 +34,7 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   const [popularImages, setPopularImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalImages, setTotalImages] = useState(0);
   const { openModal } = useModal();
   const sliderRef = useRef<Slider | null>(null);
 
@@ -49,104 +50,106 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
   };
 
   useEffect(() => {
-    setCurrentPage(1); // 검색할 때 페이지를 1로 초기화
+    setCurrentPage(1);
     if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0); // 🔹 데이터 변경 시 첫 번째 슬라이드로 이동
+      sliderRef.current.slickGoTo(0);
     }
-  }, [latestImages]); // 🔹 최신 이미지 변경 감지
+  }, [latestImages]);
 
   useEffect(() => {
-    setCurrentPage(1); // 검색할 때 페이지를 1로 초기화
+    setCurrentPage(1);
   }, [searchQuery]);
 
-  const handleTabClick = (tabId: string) => {
+  const handleTabClick = useCallback((tabId: string) => {
     setActiveTab(tabId);
-    setCurrentPage(1); // 탭을 변경할 때 페이지를 1로 초기화
-  };
+    setCurrentPage(1);
+  }, []);
 
-  const openDetailModal = (
-    id: string,
-    url: string,
-    description: string,
-    title: string,
-    prompt: string,
-    postpassword: string,
-  ) => {
-    openModal({
-      id: 'detailModal',
-      component: (
-        <DetailImageModal
-          id={id}
-          imageUrl={url}
-          title={title}
-          description={description}
-          deviceType={deviceType}
-          prompt={prompt}
-          postpassword={postpassword}
-        />
-      ),
-    });
-  };
+  const openDetailModal = useCallback(
+    (
+      id: string,
+      url: string,
+      description: string,
+      title: string,
+      prompt: string,
+      postpassword: string,
+    ) => {
+      openModal({
+        id: 'detailModal',
+        component: (
+          <DetailImageModal
+            id={id}
+            imageUrl={url}
+            title={title}
+            description={description}
+            deviceType={deviceType}
+            prompt={prompt}
+            postpassword={postpassword}
+          />
+        ),
+      });
+    },
+    [openModal, deviceType],
+  );
 
-  const fetchImages = async (
-    orderField: string,
-    orderDirection: 'asc' | 'desc',
-    setState: React.Dispatch<React.SetStateAction<ImageData[]>>,
-    isSortingByComments: boolean = false,
-  ) => {
-    setLoading(true);
-    const imageCollection = collection(db, 'images');
+  const fetchImages = useCallback(
+    async (
+      orderField: string,
+      orderDirection: 'asc' | 'desc',
+      setState: React.Dispatch<React.SetStateAction<ImageData[]>>,
+      isSortingByComments: boolean = false,
+    ) => {
+      setLoading(true);
+      const imageCollection = collection(db, 'images');
 
-    // Firestore에서 기본 정렬 (createdAt 기준)
-    const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(50));
+      const q = query(imageCollection, orderBy('createdAt', 'desc'), limit(50));
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const imageData = await Promise.all(
-        snapshot.docs.map(async (doc) => {
-          const data = doc.data();
-          const commentCollection = collection(db, `images/${doc.id}/comments`);
-          const commentSnapshot = await getDocs(commentCollection);
-          const commentCount = commentSnapshot.size || 0;
+      const unsubscribe = onSnapshot(q, async (snapshot) => {
+        const imageData = await Promise.all(
+          snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const commentCollection = collection(db, `images/${doc.id}/comments`);
+            const commentSnapshot = await getDocs(commentCollection);
+            const commentCount = commentSnapshot.size || 0;
 
-          return {
-            id: doc.id,
-            url: data.url || 'null',
-            title: data.title || 'No Title',
-            prompt: data.prompt || '',
-            description: data.description || 'No description',
-            commentCount,
-            postpassword: data.postpassword || '',
-            createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
-          };
-        }),
-      );
+            return {
+              id: doc.id,
+              url: data.url || 'null',
+              title: data.title || 'No Title',
+              prompt: data.prompt || '',
+              description: data.description || 'No description',
+              commentCount,
+              postpassword: data.postpassword || '',
+              createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
+            };
+          }),
+        );
 
-      // 🔎 검색 필터링 적용
-      let filteredData = searchQuery
-        ? imageData.filter(
-            (image) =>
-              image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
-          )
-        : imageData;
+        let filteredData = searchQuery
+          ? imageData.filter(
+              (image) =>
+                image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+            )
+          : imageData;
 
-      // 📌 댓글 많은 순 정렬 적용
-      if (isSortingByComments) {
-        filteredData = filteredData.sort((a, b) => b.commentCount - a.commentCount);
-      } else if (orderField === 'createdAt' && orderDirection === 'asc') {
-        // 📌 오래된 순 정렬 적용
-        filteredData = filteredData.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      } else if (orderField === 'createdAt' && orderDirection === 'desc') {
-        // 📌 최신순 정렬 적용
-        filteredData = filteredData.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      }
+        if (isSortingByComments) {
+          filteredData = filteredData.sort((a, b) => b.commentCount - a.commentCount);
+        } else if (orderField === 'createdAt' && orderDirection === 'asc') {
+          filteredData = filteredData.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        } else if (orderField === 'createdAt' && orderDirection === 'desc') {
+          filteredData = filteredData.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        }
 
-      setState(filteredData);
-      setLoading(false);
-    });
+        setState(filteredData);
+        setTotalImages(filteredData.length);
+        setLoading(false);
+      });
 
-    return unsubscribe;
-  };
+      return unsubscribe;
+    },
+    [searchQuery],
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -172,55 +175,43 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, [searchQuery]);
+  }, [fetchImages]);
 
-  const paginateImages = (images: ImageData[]) => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return images.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  };
+  const paginateImages = useCallback(
+    (images: ImageData[]) => {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      return images.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    },
+    [currentPage],
+  );
 
-  const renderImages = (images: ImageData[]) => {
-    const filteredImages = searchQuery
-      ? images.filter(
-          (image) =>
-            image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-      : images;
+  const handlePrevPage = useCallback(() => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  }, []);
 
-    if (deviceType === 'mobile') {
-      return (
-        <Slider ref={sliderRef} {...settings}>
-          {images.map((image) => (
-            <div
-              key={image.id}
-              onClick={() =>
-                openDetailModal(
-                  image.id,
-                  image.url,
-                  image.description,
-                  image.title,
-                  image.prompt,
-                  image.postpassword,
-                )
-              }
-            >
-              <img
-                src={image.url}
-                alt={image.description}
-                style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
-              />
-            </div>
-          ))}
-        </Slider>
-      );
-    } else {
-      return (
-        <>
-          <div className="grid-container">
-            {paginateImages(filteredImages).map((image, index) => (
+  const handleNextPage = useCallback(() => {
+    setCurrentPage((prev) => prev + 1);
+  }, []);
+
+  const handlePageClick = useCallback((pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  }, []);
+
+  const renderImages = useCallback(
+    (images: ImageData[]) => {
+      const filteredImages = searchQuery
+        ? images.filter(
+            (image) =>
+              image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+        : images;
+
+      if (deviceType === 'mobile') {
+        return (
+          <Slider ref={sliderRef} {...settings}>
+            {images.map((image) => (
               <div
-                className={`grid-item item${index + 1}`}
                 key={image.id}
                 onClick={() =>
                   openDetailModal(
@@ -236,31 +227,81 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
                 <img
                   src={image.url}
                   alt={image.description}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
                 />
-                <span className="comment-count">{image.commentCount} Comments</span>
               </div>
             ))}
-          </div>
-          <PaginationStyle>
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              <MdNavigateBefore size={24} />
-            </button>
-            <span>{currentPage}</span>
-            <button
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={currentPage * ITEMS_PER_PAGE >= filteredImages.length}
-            >
-              <MdNavigateNext size={24} />
-            </button>
-          </PaginationStyle>
-        </>
-      );
-    }
-  };
+          </Slider>
+        );
+      } else {
+        return (
+          <>
+            <div className="grid-container">
+              {paginateImages(filteredImages).map((image, index) => (
+                <div
+                  className={`grid-item item${index + 1}`}
+                  key={image.id}
+                  onClick={() =>
+                    openDetailModal(
+                      image.id,
+                      image.url,
+                      image.description,
+                      image.title,
+                      image.prompt,
+                      image.postpassword,
+                    )
+                  }
+                >
+                  <img
+                    src={image.url}
+                    alt={image.description}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <span className="comment-count">{image.commentCount} Comments</span>
+                </div>
+              ))}
+            </div>
+            <PaginationStyle>
+              <button
+                className="arrow-button"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                <MdNavigateBefore size={24} />
+              </button>
+              {Array.from({ length: Math.ceil(totalImages / ITEMS_PER_PAGE) }, (_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => handlePageClick(index + 1)}
+                  className={currentPage === index + 1 ? 'active' : ''}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              <button
+                className="arrow-button"
+                onClick={handleNextPage}
+                disabled={currentPage * ITEMS_PER_PAGE >= totalImages}
+              >
+                <MdNavigateNext size={24} />
+              </button>
+            </PaginationStyle>
+          </>
+        );
+      }
+    },
+    [
+      deviceType,
+      openDetailModal,
+      paginateImages,
+      searchQuery,
+      currentPage,
+      handlePrevPage,
+      handleNextPage,
+      handlePageClick,
+      totalImages,
+    ],
+  );
 
   return (
     <ImageViewStyle deviceType={deviceType}>

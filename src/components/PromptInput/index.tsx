@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PromptInputStyle } from './Styled';
 import SendImage from '../Modal/Send';
 import useModal from '../../hooks/useModal';
@@ -16,7 +16,6 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
   useEffect(() => {
     if (generatedPrompt && generatedPrompt !== prompt) {
       setPrompt(generatedPrompt);
-      // console.log('Generated Prompt:', generatedPrompt); // 제거
     }
   }, [generatedPrompt]);
 
@@ -28,35 +27,43 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
       if (!response.ok) throw new Error('Failed to fetch image');
       const url = response.url;
       setImageUrl(url);
-      // console.log('Fetched Image URL:', url); // 제거
     } catch (error) {
       console.error('Error fetching image:', error);
     }
   };
 
-  const handleSubmitButton = (): void => {
+  const handleSubmitButton = useCallback((): void => {
     if (!prompt.trim()) return;
 
     openModal({
       id: 'SendImageModal',
       component: <SendImage fetchImage={fetchImage} deviceType={deviceType} prompt={prompt} />,
     });
-  };
+  }, [prompt, openModal, fetchImage, deviceType]);
+
+  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrompt(e.target.value);
+  }, []);
+
+  const handleTextareaKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.ctrlKey) {
+        e.preventDefault();
+        handleSubmitButton();
+      } else if (e.key === 'Enter' && e.ctrlKey) {
+        setPrompt((prev) => prev + '\n');
+      }
+    },
+    [handleSubmitButton],
+  );
 
   return (
     <PromptInputStyle deviceType={deviceType}>
       <div className="input-contents-wrapper">
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.ctrlKey) {
-              e.preventDefault();
-              handleSubmitButton();
-            } else if (e.key === 'Enter' && e.ctrlKey) {
-              setPrompt((prev) => prev + '\n');
-            }
-          }}
+          onChange={handleTextareaChange}
+          onKeyDown={handleTextareaKeyDown}
           placeholder="AI가 생성할 내용에 대한 설명을 입력하세요"
         />
         <button
@@ -66,7 +73,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
           style={{
             opacity: !prompt.trim() ? 0.5 : 1,
             cursor: !prompt.trim() ? 'not-allowed' : 'pointer',
-          }} // 🚀 UI 개선
+          }}
         >
           생성하기
         </button>

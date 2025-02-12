@@ -45,7 +45,7 @@ const Main: React.FC = () => {
         <section className="contents">
           <div className="main-title-wrraper">
             <h2>
-              DreaScape<span>AI</span>
+              DreamScape<span>AI</span>
             </h2>
             <p>해당 입력칸에 명령어를 입력하여 이미지를 생성해보세요.</p>
           </div>

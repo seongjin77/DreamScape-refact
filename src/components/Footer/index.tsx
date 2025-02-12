@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
             <p>📌 프로젝트 레포지토리</p>
             <a
               className="project-link"
-              href="https://github.com/jattett/your-project"
+              href="https://github.com/gm-sj/image-ai-app"
               target="_blank"
               rel="noopener noreferrer"
             >

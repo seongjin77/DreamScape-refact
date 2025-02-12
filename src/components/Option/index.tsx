@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { OptionStyld } from './Styled';
+import React, { useState, useCallback } from 'react';
 import { CircularProgress } from '@mui/material';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { OptionStyld } from './Styled';
 
 interface OptionProps {
   onPromptGenerated: (prompt: string) => void;
@@ -10,7 +10,7 @@ interface OptionProps {
 const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
   const [loading, setLoading] = useState(false);
 
-  const fetchPromptFromGoogleAI = async () => {
+  const fetchPromptFromGoogleAI = useCallback(async () => {
     const API_KEY = '';
 
     if (!API_KEY) {
@@ -43,7 +43,7 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
     } finally {
       setLoading(false); // 로딩 상태 종료
     }
-  };
+  }, [onPromptGenerated]);
 
   return (
     <OptionStyld>

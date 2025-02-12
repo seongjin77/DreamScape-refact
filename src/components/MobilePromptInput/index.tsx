@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PromptInputStyle, ToggleButton } from './Styled';
 import SendImage from '../Modal/Send';
 import useModal from '../../hooks/useModal';
@@ -45,13 +45,33 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
     }
   };
 
-  const handleSubmitButton = (): void => {
+  const handleSubmitButton = useCallback((): void => {
     if (!prompt.trim()) return; // ✅ 빈 값일 경우 실행하지 않음
     openModal({
       id: 'SendImageModal',
       component: <SendImage fetchImage={fetchImage} deviceType={deviceType} prompt={prompt} />,
     });
-  };
+  }, [prompt, openModal, fetchImage, deviceType]);
+
+  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrompt(e.target.value);
+  }, []);
+
+  const handleTextareaKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.ctrlKey) {
+        e.preventDefault();
+        if (prompt.trim()) handleSubmitButton();
+      } else if (e.key === 'Enter' && e.ctrlKey) {
+        setPrompt((prev) => prev + '\n');
+      }
+    },
+    [handleSubmitButton],
+  );
+
+  const handleToggleButtonClick = useCallback(() => {
+    setIsCollapsed((prev) => !prev);
+  }, []);
 
   return (
     <>
@@ -60,15 +80,8 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
           <div className="input-contents-wrapper">
             <textarea
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.ctrlKey) {
-                  e.preventDefault();
-                  if (prompt.trim()) handleSubmitButton();
-                } else if (e.key === 'Enter' && e.ctrlKey) {
-                  setPrompt((prev) => prev + '\n');
-                }
-              }}
+              onChange={handleTextareaChange}
+              onKeyDown={handleTextareaKeyDown}
               placeholder="AI가 생성할 내용에 대한 설명을 입력하세요"
             />
             <button
@@ -82,7 +95,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ generatedPrompt = '' }) => {
         )}
       </PromptInputStyle>
 
-      <ToggleButton isVisible={isVisible} onClick={() => setIsCollapsed((prev) => !prev)}>
+      <ToggleButton isVisible={isVisible} onClick={handleToggleButtonClick}>
         {isCollapsed ? '이미지 생성창 펼치기' : '생성창 접기'}
       </ToggleButton>
     </>

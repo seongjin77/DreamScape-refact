@@ -178,29 +178,48 @@ export const PaginationStyle = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  gap: 30px;
+  gap: 20px;
 
   button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 5px;
-    font-size: 16px;
+    background: none;
     border: none;
-    background-color: var(--blue-color);
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-    border-radius: 50%;
-
-    &:hover {
-      background-color: #1565c0;
+    font-size: 16px;
+    color: var(--gray-color);
+    font-weight: 300;
+    transition: all 0.3s ease-in-out;
+    &.active {
+      color: var(--blue-color);
+      font-weight: 700;
+      font-size: 18px;
     }
 
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    &.arrow-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      border: none;
+      background-color: var(--blue-color);
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+
+      &:hover {
+        background-color: #1565c0;
+      }
+
+      &.active {
+        background-color: #1565c0;
+        font-weight: bold;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     }
   }
 
