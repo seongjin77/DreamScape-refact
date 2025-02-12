@@ -1,5 +1,6 @@
 
-![Uploading DreamScape AI.png…]()
+![DreamScape AI Banner](src/common/images/DreamScapeAI_banner.png)
+
 
 ## 📌 소개
 
