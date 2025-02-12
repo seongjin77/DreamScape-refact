@@ -187,6 +187,7 @@ export const PaginationStyle = styled.div`
     color: var(--gray-color);
     font-weight: 300;
     transition: all 0.3s ease-in-out;
+    cursor: pointer;
     &.active {
       color: var(--blue-color);
       font-weight: 700;
