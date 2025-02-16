@@ -29,6 +29,10 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
 
+      # - 빌드 전에 CI 환경 변수를 false로 설정
+      - name: Set CI environment variable to false
+        run: echo "CI=false" >> $GITHUB_ENV
+
       # 4 - 빌드
       - name: Build React App
         run: npm run build

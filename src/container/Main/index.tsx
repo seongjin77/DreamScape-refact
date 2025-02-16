@@ -12,7 +12,7 @@ import { useDeviceType } from '../../hooks/useDeviceType';
 import SearchBar from '../../components/SeachBar';
 
 const Main: React.FC = () => {
-  console.log('ci 테스트');
+  console.log('ci test');
 
   const [prompt, setPrompt] = useState<string>('');
   const { deviceType } = useDeviceType();
