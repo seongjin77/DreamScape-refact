@@ -12,8 +12,6 @@ import { useDeviceType } from '../../hooks/useDeviceType';
 import SearchBar from '../../components/SeachBar';
 
 const Main: React.FC = () => {
-  console.log('ci test 환경변수 세팅 이후 테스트');
-
   const [prompt, setPrompt] = useState<string>('');
   const { deviceType } = useDeviceType();
   const [searchQuery, setSearchQuery] = useState<string>('');
