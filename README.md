@@ -13,6 +13,9 @@
 | <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTscDSszyGFxlaLRB8Aj1A3gfUKy0hCRhCH4g&s" width="225px" height="225px"> | <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTscDSszyGFxlaLRB8Aj1A3gfUKy0hCRhCH4g&s" width="225px" height="225px"> |
 |                                                  [gyumin](https://github.com/jattett)                                                   |                                                [sungjin](https://github.com/seongjin77)                                                 |
 
+## 🔍 아키텍처
+![아키텍쳐](https://github.com/user-attachments/assets/2678cbab-65f3-4686-8a8d-d430c0b852ec)
+
 
 ## 🚀 주요 기능
 
