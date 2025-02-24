@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../firebase/config';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface AddCommentProps {
   id: string;
@@ -9,12 +9,17 @@ interface AddCommentProps {
 
 /* 댓글 추가 */
 const AddComment = ({ id }: AddCommentProps) => {
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
-  const [commentValue, setCommentValue] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
-  const saveComment = async () => {
-    if (!userId || !password || !commentValue) {
+  const onSubmit = async (data: any) => {
+    const { userId, password, commentValue } = data;
+
+    if (!userId && !password && !commentValue) {
       alert('모든 필드를 입력해주세요.');
       return;
     }
@@ -28,35 +33,32 @@ const AddComment = ({ id }: AddCommentProps) => {
 
     await addDoc(collection(db, `images/${id}/comments`), commentData);
 
-    setUserId('');
-    setPassword('');
-    setCommentValue('');
+    // Reset form fields
+    reset();
   };
 
   return (
-    <div className="comment-add">
+    <form onSubmit={handleSubmit(onSubmit)} className="comment-add">
       <div className="user-info-add">
         <div className="form">
-          <label htmlFor="">닉네임</label>
-          <input value={userId} type="text" onChange={(e) => setUserId(e.target.value)} />
+          <label htmlFor="userId">닉네임</label>
+          <input {...register('userId', { required: true })} type="text" />
         </div>
         <div className="form">
-          <label htmlFor="">패스워드</label>
-          <input value={password} type="password" onChange={(e) => setPassword(e.target.value)} />
+          <label htmlFor="password">패스워드</label>
+          <input {...register('password', { required: true })} type="password" />
         </div>
       </div>
+      {errors.userId && <span>닉네임을 입력해주세요.</span>}
+      {errors.password && <span>패스워드를 입력해주세요.</span>}
       <div className="textarea-add">
-        <textarea
-          value={commentValue}
-          onChange={(e) => {
-            setCommentValue(e.target.value);
-          }}
-        />
-        <Button variant="contained" onClick={saveComment}>
+        <textarea {...register('commentValue', { required: true })} />
+        {errors.commentValue && <span>댓글을 입력해주세요.</span>}
+        <Button variant="contained" type="submit">
           등록하기
         </Button>
       </div>
-    </div>
+    </form>
   );
 };
 
