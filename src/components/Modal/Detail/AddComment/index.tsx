@@ -7,22 +7,19 @@ interface AddCommentProps {
   id: string;
 }
 
+interface CommentData {
+  userId: string;
+  password: string;
+  commentValue: string;
+}
+
 /* 댓글 추가 */
 const AddComment = ({ id }: AddCommentProps) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const { register, handleSubmit, reset } = useForm<CommentData>();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: CommentData) => {
+    // form 필드 값이 유효하지 않으면 자동으로 RHF에서 실행 안됨
     const { userId, password, commentValue } = data;
-
-    if (!userId && !password && !commentValue) {
-      alert('모든 필드를 입력해주세요.');
-      return;
-    }
 
     const commentData = {
       userId,
@@ -42,18 +39,15 @@ const AddComment = ({ id }: AddCommentProps) => {
       <div className="user-info-add">
         <div className="form">
           <label htmlFor="userId">닉네임</label>
-          <input {...register('userId', { required: true })} type="text" />
+          <input id="userId" {...register('userId', { required: true })} type="text" />
         </div>
         <div className="form">
           <label htmlFor="password">패스워드</label>
-          <input {...register('password', { required: true })} type="password" />
+          <input id="password" {...register('password', { required: true })} type="password" />
         </div>
       </div>
-      {errors.userId && <span>닉네임을 입력해주세요.</span>}
-      {errors.password && <span>패스워드를 입력해주세요.</span>}
       <div className="textarea-add">
-        <textarea {...register('commentValue', { required: true })} />
-        {errors.commentValue && <span>댓글을 입력해주세요.</span>}
+        <textarea id="commentValue" {...register('commentValue', { required: true })} />
         <Button variant="contained" type="submit">
           등록하기
         </Button>
