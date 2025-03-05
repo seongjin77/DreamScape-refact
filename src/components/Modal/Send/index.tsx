@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AspectRatioSelector from '../../AspectRatioSelector';
 import { ModalWrapper, ModalContent, CommentModalStyle } from './Styled';
 import { Button } from '@mui/material';
-import { uploadImageFromUrl } from '../../../firebase/config';
+import { uploadImageFromUrl } from '../../../firebase/api';
 import useModal from '../../../hooks/useModal';
 import { useDeviceType } from '../../../hooks/useDeviceType';
 
