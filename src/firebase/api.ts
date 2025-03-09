@@ -77,8 +77,6 @@ async function uploadImageFromUrl(
     };
 
     await setDoc(doc(imagesRef, String(newId)), imageDoc);
-
-    console.log('이미지가 성공적으로 저장되었습니다.', imageDoc);
   } catch (error) {
     console.error('이미지 업로드 실패:', (error as Error).message);
   }

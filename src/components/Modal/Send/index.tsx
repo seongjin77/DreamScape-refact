@@ -49,8 +49,6 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
 
     try {
       await uploadImageFromUrl(imageUrl, description, title, prompt, postpassword);
-      console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
-      console.log('Send 컴포넌트 데이터 업로드 성공:', { title, description });
 
       closeModal('SendImageModal');
     } catch (error) {

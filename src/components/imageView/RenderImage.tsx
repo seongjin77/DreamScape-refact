@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ImageViewStyle, PaginationStyle } from './Styled';
+import { useRef } from 'react';
+import { PaginationStyle } from './Styled';
 import useModal from '../../hooks/useModal';
 import { DetailImageModal } from '../Modal';
-import CircularProgress from '@mui/material/CircularProgress';
-import { getDocs, onSnapshot, collection, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 
 interface ImageData {
   id: string;
@@ -22,7 +19,6 @@ interface ImageData {
 
 interface RenderImageProps {
   images: ImageData[];
-  searchQuery: string;
   deviceType: string;
   handlePrevPage: () => void;
   handleNextPage: () => void;
@@ -35,7 +31,6 @@ interface RenderImageProps {
 
 const RenderImage = ({
   images,
-  searchQuery,
   deviceType,
   handlePrevPage,
   handleNextPage,
@@ -47,14 +42,6 @@ const RenderImage = ({
 }: RenderImageProps) => {
   const { openModal } = useModal();
   const sliderRef = useRef<Slider | null>(null);
-
-  const filteredImages = searchQuery
-    ? images.filter(
-        (image) =>
-          image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          image.prompt.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : images;
 
   const openDetailModal = (
     id: string,
@@ -131,7 +118,7 @@ const RenderImage = ({
     return (
       <>
         <div className="grid-container">
-          {paginateImages(filteredImages).map((image, index) => (
+          {paginateImages(images).map((image, index) => (
             <div
               className={`grid-item item${index + 1}`}
               key={image.id}

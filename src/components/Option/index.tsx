@@ -31,13 +31,11 @@ const Option: React.FC<OptionProps> = ({ onPromptGenerated }) => {
       const result = await model.generateContent(prompt);
 
       const generatedPrompt = result.response.text();
-      console.log('추천 프롬프트:', generatedPrompt);
 
       onPromptGenerated(generatedPrompt);
     } catch (error) {
       const fallbackPrompt = '프롬프트를 불러올 수 없습니다.';
       console.error('Google Generative AI 오류:', error);
-      console.log(fallbackPrompt);
 
       onPromptGenerated(fallbackPrompt);
     } finally {

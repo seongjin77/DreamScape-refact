@@ -1,14 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ImageViewStyle, PaginationStyle } from './Styled';
-import useModal from '../../hooks/useModal';
-import { DetailImageModal } from '../Modal';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ImageViewStyle } from './Styled';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getDocs, onSnapshot, collection, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import RenderImage from './RenderImage';
 
 interface ImageData {
@@ -134,7 +128,6 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
 
     fetchData()
       .then((cleanup) => {
-        console.log('cleanup', cleanup);
         unsubscribe = cleanup;
       })
       .catch((error) => console.error('이미지 불러오기 실패:', error));
@@ -165,7 +158,6 @@ const ImageView: React.FC<ImageViewProps> = ({ deviceType, searchQuery }) => {
             ) : (
               <RenderImage
                 images={latestImages}
-                searchQuery={searchQuery}
                 deviceType={deviceType}
                 handlePrevPage={handlePrevPage}
                 handleNextPage={handleNextPage}
