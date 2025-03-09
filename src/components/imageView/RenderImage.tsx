@@ -78,15 +78,28 @@ const RenderImage = ({
     arrows: true,
   };
 
-  /* 최신순 클릭시 페이지 리셋 */
-  /*
-  useEffect(() => {
-    setCurrentPage(1);
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0);
+  const getOptimizedImageUrl = (imageUrl: string) => {
+    // 기본 이미지 URL (최대 크기)
+    let baseUrl;
+    let width;
+
+    switch (deviceType) {
+      case 'mobile':
+      case 'tablet':
+        width = 712; // 태블릿에서 사용할 이미지 너비
+        break;
+      case 'desktop':
+        width = 250; // 데스크탑에서 사용할 이미지 너비
+        break;
+      default:
+        width = 250; // 기본값 (데스크탑)
     }
-  }, [latestImages]);
-  */
+
+    // weserv.nl CDN URL에 크기 적용하여 최적화된 이미지 URL 반환
+    baseUrl = `https://images.weserv.nl/?url=${encodeURIComponent(imageUrl)}&w=${width}`;
+
+    return baseUrl;
+  };
 
   if (deviceType === 'mobile') {
     return (
@@ -106,7 +119,7 @@ const RenderImage = ({
             }
           >
             <img
-              src={image.url}
+              src={getOptimizedImageUrl(image.url)}
               alt={image.description}
               style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
             />
@@ -134,7 +147,7 @@ const RenderImage = ({
               }
             >
               <img
-                src={image.url}
+                src={getOptimizedImageUrl(image.url)}
                 alt={image.description}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
