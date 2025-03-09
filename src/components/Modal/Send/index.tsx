@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AspectRatioSelector from '../../AspectRatioSelector';
 import { ModalWrapper, ModalContent, CommentModalStyle } from './Styled';
 import { Button } from '@mui/material';
-import { uploadImageFromUrl } from '../../../firebase/config';
+import { uploadImageFromUrl } from '../../../firebase/api';
 import useModal from '../../../hooks/useModal';
 import { useDeviceType } from '../../../hooks/useDeviceType';
 
@@ -49,8 +49,6 @@ const SendImage: React.FC<ModalPageProps> = ({ fetchImage, prompt }) => {
 
     try {
       await uploadImageFromUrl(imageUrl, description, title, prompt, postpassword);
-      console.log('Send 컴포넌트 프롬프트 업로드 성공:', { prompt });
-      console.log('Send 컴포넌트 데이터 업로드 성공:', { title, description });
 
       closeModal('SendImageModal');
     } catch (error) {
